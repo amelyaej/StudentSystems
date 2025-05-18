@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Science Project</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      font-family: 'Playfair Display', serif;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      background-color: #001f3f; /* navy background */
+      color: #f5f1e9; /* beige text */
+    }
+
+    header, section {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 4rem 2rem;
+      position: relative;
+    }
+
+    header {
+      background: #f5f1e9; /* beige background */
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      color: #001f3f; /* navy text */
+      margin-bottom: 1rem;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #4a4a42; /* darker beige/grey for paragraph */
+      max-width: 700px;
+    }
+
+    nav {
+      position: fixed;
+      top: 1rem;
+      right: 2rem;
+      z-index: 1000;
+    }
+
+    nav a {
+      margin-left: 1rem;
+      color: #f5f1e9; /* beige */
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+    nav a:hover {
+      color: #ffdd99; /* lighter beige on hover */
+    }
+
+    .parallax-section {
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      color: #f5f1e9;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+    }
+
+    .section1 {
+      background-image: url('your-first-image.png');
+    }
+
+    .section2 {
+      background-image: url('your-second-image.png');
+    }
+
+    .content-box {
+      background-color: rgba(0, 31, 63, 0.7); /* translucent navy */
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 700px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(255, 221, 153, 0.4);
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #ffdd99; /* beige highlight */
+    }
+
+    p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #f5f1e9; /* beige text */
+    }
+
+    footer {
+      background: #001f3f; /* navy */
+      color: #ffdd99; /* beige */
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #ffdd99; /* beige */
+    }
+
+    .floating-icon {
+      position: absolute;
+      font-size: 3rem;
+      color: #ffdd99; /* beige */
+      opacity: 0.6;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .float1 { top: 10%; left: 20%; animation-delay: 0s; }
+    .float2 { top: 30%; right: 15%; animation-delay: 2s; }
+    .float3 { bottom: 15%; left: 10%; animation-delay: 4s; }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-30px); }
+      100% { transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#about">About</a>
+    <a href="#cases">Cases</a>
+    <a href="#users">Users</a>
+  </nav>
+
+  <header id="about">
+    <i class="fas fa-chart-line icon"></i>
+    <h1>Unlock Insights with Our Data Science Project</h1>
+    <p>This platform provides intelligent solutions based on data science to improve business decisions, healthcare outcomes, and user engagement. Explore the power of analytics and machine learning through real-world use cases.</p>
+  </header>
+
+  <section class="parallax-section section1" id="cases">
+    <div class="floating-icon float1"><i class="fas fa-cogs"></i></div>
+    <div class="floating-icon float2"><i class="fas fa-brain"></i></div>
+    <div class="floating-icon float3"><i class="fas fa-database"></i></div>
+    <div class="content-box">
+      <i class="fas fa-lightbulb icon"></i>
+      <h2>Use Cases</h2>
+      <p>Our project is applied in fraud detection, predictive maintenance, customer segmentation, and healthcare diagnostics. Each case is supported with real-time dashboards, ML models, and visual analytics to guide decisions.</p>
+    </div>
+  </section>
+
+  <section class="parallax-section section2" id="users">
+    <div class="floating-icon float1"><i class="fas fa-user-tie"></i></div>
+    <div class="floating-icon float2"><i class="fas fa-laptop-code"></i></div>
+    <div class="floating-icon float3"><i class="fas fa-chart-pie"></i></div>
+    <div class="content-box">
+      <i class="fas fa-users icon"></i>
+      <h2>Target Users</h2>
+      <p>This project is designed for data analysts, decision-makers, researchers, and organizations looking to leverage insights from their data. With an intuitive interface and powerful backend, it fits both technical and non-technical users.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Data Science Project. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
