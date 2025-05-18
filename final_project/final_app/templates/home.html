@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,7 @@
   <title>Data Science Project</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -17,8 +19,8 @@
       font-family: 'Playfair Display', serif;
       scroll-behavior: smooth;
       overflow-x: hidden;
-      background-color: #001f3f; /* navy background */
-      color: #f5f1e9; /* beige text */
+      background-color: #3A0519;
+      color: #f5f1e9;
     }
 
     header, section {
@@ -30,41 +32,56 @@
       align-items: center;
       padding: 4rem 2rem;
       position: relative;
-    }
-
-    header {
-      background: #f5f1e9; /* beige background */
       text-align: center;
     }
 
+    header {
+      background-image: url('{% static 'final_app/images/image1.jpeg' %}');
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      color: #f5f1e9;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+    }
+
     header h1 {
-      font-size: 3rem;
-      color: #001f3f; /* navy text */
+      font-size: 2.5rem;
       margin-bottom: 1rem;
+      transition: color 0.3s ease;
+    }
+
+    header h1:hover {
+      color: #ffdd99;
     }
 
     header p {
       font-size: 1.2rem;
-      color: #4a4a42; /* darker beige/grey for paragraph */
       max-width: 700px;
     }
 
     nav {
       position: fixed;
-      top: 1rem;
-      right: 2rem;
-      z-index: 1000;
+      top: 0;
+      right: 0;
+      width: 100%;
+      background-color: black;
+      display: flex;
+      justify-content: flex-end;
+      padding: 1rem 2rem;
+      z-index: 10000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
     }
 
     nav a {
-      margin-left: 1rem;
-      color: #f5f1e9; /* beige */
+      margin-right: 1.5rem;
+      color: #f5f1e9;
       text-decoration: none;
       font-weight: bold;
       transition: color 0.3s ease;
     }
+
     nav a:hover {
-      color: #ffdd99; /* lighter beige on hover */
+      color: #ffdd99;
     }
 
     .parallax-section {
@@ -76,15 +93,20 @@
     }
 
     .section1 {
-      background-image: url('your-first-image.png');
+      background-color: #3A0519;
+      color: white;
     }
 
     .section2 {
-      background-image: url('your-second-image.png');
+      background-color: #3D0C11;
+    }
+
+    .section3 {
+      background-image: url('{% static 'final_app/images/image2.jpeg' %}');
     }
 
     .content-box {
-      background-color: rgba(0, 31, 63, 0.7); /* translucent navy */
+      background-color: black;
       padding: 2rem;
       border-radius: 10px;
       max-width: 700px;
@@ -95,18 +117,17 @@
     h2 {
       font-size: 2.5rem;
       margin-bottom: 1rem;
-      color: #ffdd99; /* beige highlight */
+      color: #ffdd99;
     }
 
     p {
       font-size: 1.1rem;
       line-height: 1.6;
-      color: #f5f1e9; /* beige text */
     }
 
     footer {
-      background: #001f3f; /* navy */
-      color: #ffdd99; /* beige */
+      background: black;
+      color: white;
       padding: 2rem;
       text-align: center;
     }
@@ -114,13 +135,13 @@
     .icon {
       font-size: 2rem;
       margin-bottom: 1rem;
-      color: #ffdd99; /* beige */
+      color: #ffdd99;
     }
 
     .floating-icon {
       position: absolute;
       font-size: 3rem;
-      color: #ffdd99; /* beige */
+      color: white;
       opacity: 0.6;
       animation: float 6s ease-in-out infinite;
     }
@@ -134,47 +155,85 @@
       50% { transform: translateY(-30px); }
       100% { transform: translateY(0); }
     }
+
+    canvas {
+      max-width: 80vw;
+      height: auto;
+    }
+
+    @media (max-width: 768px) {
+      header h1 { font-size: 2.2rem; }
+      h2 { font-size: 1.8rem; }
+      p { font-size: 1rem; }
+    }
   </style>
 </head>
 <body>
-
   <nav>
-    <a href="#about">About</a>
+    <a href="#about">Project</a>
     <a href="#cases">Cases</a>
-    <a href="#users">Users</a>
+    <a href="#target">Target</a>
+    <a href="#aboutPage">About</a>
   </nav>
 
   <header id="about">
     <i class="fas fa-chart-line icon"></i>
-    <h1>Unlock Insights with Our Data Science Project</h1>
-    <p>This platform provides intelligent solutions based on data science to improve business decisions, healthcare outcomes, and user engagement. Explore the power of analytics and machine learning through real-world use cases.</p>
+    <h1>Group 7 | Data Science Project of Faculty Computing Student Information</h1>
+    <p>Discover how data science can be applied in real-world scenarios. Our project dives deep into data-driven decisions for improved education insights.</p>
   </header>
 
-  <section class="parallax-section section1" id="cases">
+  <section class="parallax-section section2" id="cases">
     <div class="floating-icon float1"><i class="fas fa-cogs"></i></div>
     <div class="floating-icon float2"><i class="fas fa-brain"></i></div>
     <div class="floating-icon float3"><i class="fas fa-database"></i></div>
     <div class="content-box">
       <i class="fas fa-lightbulb icon"></i>
-      <h2>Use Cases</h2>
-      <p>Our project is applied in fraud detection, predictive maintenance, customer segmentation, and healthcare diagnostics. Each case is supported with real-time dashboards, ML models, and visual analytics to guide decisions.</p>
+      <h2>Project Use Cases</h2>
+      <p>Used in predicting student performance, clustering engagement, and analyzing academic outcomes. Built with interactive visualizations and real-time data handling.</p>
     </div>
   </section>
 
-  <section class="parallax-section section2" id="users">
-    <div class="floating-icon float1"><i class="fas fa-user-tie"></i></div>
-    <div class="floating-icon float2"><i class="fas fa-laptop-code"></i></div>
-    <div class="floating-icon float3"><i class="fas fa-chart-pie"></i></div>
+  <section class="parallax-section section3" id="target">
     <div class="content-box">
-      <i class="fas fa-users icon"></i>
+      <i class="fas fa-user-group icon"></i>
       <h2>Target Users</h2>
-      <p>This project is designed for data analysts, decision-makers, researchers, and organizations looking to leverage insights from their data. With an intuitive interface and powerful backend, it fits both technical and non-technical users.</p>
+      <p>The project is intended for university administrators, educators, and data analysts who aim to enhance student success and institutional performance through data insights.</p>
     </div>
+  </section>
+
+  <section id="aboutPage">
+    <!-- About Page Placeholder -->
   </section>
 
   <footer>
-    <p>&copy; 2025 Data Science Project. All rights reserved.</p>
+    <p>&copy; 2025 Group 7 Data Science Project. All rights reserved.</p>
   </footer>
 
+  <script>
+    const ctx = document.getElementById('contributionChart')?.getContext('2d');
+    if (ctx) {
+      const contributionChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Member A', 'Member B', 'Member C', 'Member D'],
+          datasets: [{
+            label: 'Features Contributed',
+            data: [12, 19, 7, 14],
+            backgroundColor: '#ffdd99',
+            borderColor: '#800020',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  </script>
 </body>
 </html>
