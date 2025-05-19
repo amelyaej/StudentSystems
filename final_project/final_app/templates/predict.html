@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Predict GPA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+
+        html, body {
+          font-family: 'Playfair Display', serif;
+          scroll-behavior: smooth;
+          overflow-x: hidden;
+          background-color: #3A0519;
+          color: #f5f1e9;
+        }
+
+        header, section {
+          width: 100vw;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 4rem 2rem;
+          position: relative;
+          text-align: center;
+        }
+
+        header {
+          background-image: url("{% static 'final_app/images/image1.jpeg' %}");
+          background-attachment: fixed;
+          background-size: cover;
+          background-position: center;
+          color: #f5f1e9;
+          text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        header h1 {
+          font-size: 2.5rem;
+          margin-bottom: 1rem;
+          transition: color 0.3s ease;
+        }
+
+        header h1:hover {
+          color: #ffdd99;
+        }
+
+        header p {
+          font-size: 1.2rem;
+          max-width: 700px;
+        }
+
+        nav {
+          position: fixed;
+          top: 0;
+          right: 0;
+          width: 100%;
+          background-color: black;
+          display: flex;
+          justify-content: flex-end;
+          padding: 1rem 2rem;
+          z-index: 10000;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        nav a {
+          margin-right: 1.5rem;
+          color: #f5f1e9;
+          text-decoration: none;
+          font-weight: bold;
+          transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+          color: #ffdd99;
+        }
+
+        .content-box {
+          background-color: black;
+          padding: 2rem;
+          border-radius: 10px;
+          max-width: 700px;
+          text-align: center;
+          box-shadow: 0 0 15px rgba(255, 221, 153, 0.4);
+          margin: auto;
+          margin-top: 2rem;
+        }
+
+        h2 {
+          font-size: 2.5rem;
+          margin-bottom: 1rem;
+          color: #ffdd99;
+        }
+
+        p {
+          font-size: 1.1rem;
+          line-height: 1.6;
+        }
+
+        footer {
+          background: black;
+          color: white;
+          padding: 2rem;
+          text-align: center;
+        }
+
+        form {
+          margin-top: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        input, select {
+          padding: 0.5rem;
+          border-radius: 5px;
+          border: none;
+          outline: none;
+          font-size: 1rem;
+          background-color: #f5f1e9;
+          color: #3A0519;
+          font-family: 'Playfair Display', serif;
+        }
+
+        button {
+          background-color: #ffdd99;
+          color: #3A0519;
+          padding: 0.75rem;
+          border: none;
+          border-radius: 5px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+
+        button:hover {
+          background-color: #ffb74d;
+        }
+
+        .record-card {
+          background: #2a0411;
+          padding: 1rem;
+          margin: 1rem 0;
+          border-radius: 8px;
+          box-shadow: 0 0 10px #ffdd9944;
+        }
+
+        .record-card h3 {
+          color: #ffdd99;
+        }
+
+        .record-card p {
+          color: #f5f1e9;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="/predict/">Predict GPA</a>
+    <a href="/admin/">Admin</a>
+</nav>
+
+<header>
+    <h1>Predict GPA Drop</h1>
+    <p>Select a student and semester to analyze GPA trends and predict possible drops.</p>
+</header>
+
+<section class="section3 content-box">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Predict GPA</button>
+    </form>
+
+    {% if predicted_records %}
+        <div class="record-card">
+            <h3>{{ predicted_records.student.name }} - Semester {{ predicted_records.semester_id }}</h3>
+            {% if predicted_records.current_record %}
+                <p><strong>Average Grade:</strong> {{ predicted_records.current_record.avg_grade }}</p>
+                <p><strong>Attendance:</strong> {{ predicted_records.current_record.attendance_percentage }}%</p>
+                <p><strong>GPA Drop:</strong> {{ predicted_records.current_record.gpa_drop|yesno:"Yes,No" }}</p>
+            {% else %}
+                <p>No record found for this semester.</p>
+            {% endif %}
+
+            <h3>Previous Records</h3>
+            {% for record in predicted_records.prev_records %}
+                <div class="record-card">
+                    <p><strong>Semester {{ record.semester_id }}:</strong></p>
+                    <ul>
+                        <li>Avg Grade: {{ record.avg_grade }}</li>
+                        <li>Attendance: {{ record.attendance_percentage }}%</li>
+                        <li>GPA Drop: {{ record.gpa_drop|yesno:"Yes,No" }}</li>
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+
+<footer>
+    &copy; 2025 GPA Tracker | Data Science Project
+</footer>
+
+{% if predicted_records.data %}
+<div style="width: 90%; max-width: 700px; margin: 2rem auto;">
+    <canvas id="gpaChart" width="400" height="200"></canvas>
+</div>
+<!-- Load Chart.js from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Safely output JSON data for JS -->
+<script id="labels-data" type="application/json">{{ predicted_records.labels|json_script:"labels-data" }}</script>
+<script id="gpa-data" type="application/json">{{ predicted_records.data|json_script:"gpa-data" }}</script>
+<script>
+    const labels = JSON.parse(document.getElementById('labels-data').textContent);
+    const gpaData = JSON.parse(document.getElementById('gpa-data').textContent);
+    const ctx = document.getElementById('gpaChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Average Grade Trend',
+                data: gpaData,
+                borderColor: '#ffdd99',
+                backgroundColor: 'rgba(255, 221, 153, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: false, ticks: { color: '#f5f1e9' } },
+                x: { ticks: { color: '#f5f1e9' } }
+            },
+            plugins: {
+                legend: { labels: { color: '#f5f1e9' } }
+            }
+        }
+    });
+</script>
+{% endif %}
+
+</body>
+</html>

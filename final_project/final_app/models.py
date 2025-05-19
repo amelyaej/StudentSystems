@@ -112,3 +112,35 @@ class Student(models.Model):
     class Meta:
         managed = False
         db_table = 'student'
+
+class MLModel(models.Model):
+    MODEL_TYPES = [
+        ('classification', 'Classification'),
+        ('regression', 'Regression'),
+        ('clustering', 'Clustering'),
+    ]
+
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    model_type = models.CharField(max_length=20, choices=MODEL_TYPES)
+    use_case = models.CharField(max_length=100)
+    dataset = models.CharField(max_length=100)
+    file_path = models.FileField(upload_to='ml_models/', null=True, blank=True)
+    creator = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+class GPARecord(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    semester_id = models.IntegerField()
+    avg_grade = models.FloatField()
+    attendance_percentage = models.FloatField()
+    assessment_count = models.IntegerField()
+    avg_score = models.FloatField()
+    prev_gpa = models.FloatField()
+    gpa_drop = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.student.name} - Semester {self.semester_id}"
