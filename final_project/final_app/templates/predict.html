@@ -3,253 +3,870 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Predict GPA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Dashboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display :wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css ">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
+    <!-- html2pdf.js for client-side PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js "></script>
     <style>
+        :root {
+            --primary: #3A0519;
+            --secondary: #ffdd99;
+            --text-light: #f5f1e9;
+            --text-dark: #2a0411;
+            --danger: #ff6b6b;
+            --success: #6bff6b;
+            --warning: #ffa500;
+            --info: #4ecdc4;
+        }
         * {
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-
-        html, body {
-          font-family: 'Playfair Display', serif;
-          scroll-behavior: smooth;
-          overflow-x: hidden;
-          background-color: #3A0519;
-          color: #f5f1e9;
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--secondary);
+            animation: fadeInDown 1s ease-in-out;
         }
-
-        header, section {
-          width: 100vw;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          padding: 4rem 2rem;
-          position: relative;
-          text-align: center;
+        .hero-subtitle {
+            font-size: 1.25rem;
+            max-width: 700px;
+            margin-top: 1rem;
+            color: var(--text-light);
+            font-weight: 400;
+            animation: fadeInUp 1.2s ease-in-out;
         }
-
-        header {
-          background-image: url("{% static 'final_app/images/image1.jpeg' %}");
-          background-attachment: fixed;
-          background-size: cover;
-          background-position: center;
-          color: #f5f1e9;
-          text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-
-        header h1 {
-          font-size: 2.5rem;
-          margin-bottom: 1rem;
-          transition: color 0.3s ease;
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-
-        header h1:hover {
-          color: #ffdd99;
+        body {
+            font-family: 'Playfair Display', serif;
+            background-color: var(--primary);
+            color: var(--text-light);
+            line-height: 1.6;
         }
-
-        header p {
-          font-size: 1.2rem;
-          max-width: 700px;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
         }
-
         nav {
-          position: fixed;
-          top: 0;
-          right: 0;
-          width: 100%;
-          background-color: black;
-          display: flex;
-          justify-content: flex-end;
-          padding: 1rem 2rem;
-          z-index: 10000;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            background-color: black;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: flex-end;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
         }
-
         nav a {
-          margin-right: 1.5rem;
-          color: #f5f1e9;
-          text-decoration: none;
-          font-weight: bold;
-          transition: color 0.3s ease;
+            color: var(--text-light);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: bold;
+            transition: color 0.3s ease;
         }
-
         nav a:hover {
-          color: #ffdd99;
+            color: var(--secondary);
+        }
+        header {
+            background-image: url("{% static 'final_app/images/image1.jpeg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-light);
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+        header h1:hover {
+            color: var(--secondary);
+        }
+        .card {
+            background: rgba(42, 4, 17, 0.7);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 10px rgba(255, 221, 153, 0.2);
+        }
+        .highlight-card {
+            border-left: 4px solid var(--secondary);
+            background: rgba(255, 221, 153, 0.1);
         }
 
-        .content-box {
-          background-color: black;
-          padding: 2rem;
-          border-radius: 10px;
-          max-width: 700px;
-          text-align: center;
-          box-shadow: 0 0 15px rgba(255, 221, 153, 0.4);
-          margin: auto;
-          margin-top: 2rem;
+        /* Enhanced Prediction Card Styles */
+        .prediction-card {
+            background: linear-gradient(135deg, rgba(255, 221, 153, 0.15), rgba(42, 4, 17, 0.85));
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 8px 25px rgba(255, 221, 153, 0.3);
+            position: relative;
+            overflow: hidden;
         }
-
-        h2 {
-          font-size: 2.5rem;
-          margin-bottom: 1rem;
-          color: #ffdd99;
+        .prediction-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 221, 153, 0.1),
+                transparent
+            );
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
         }
-
-        p {
-          font-size: 1.1rem;
-          line-height: 1.6;
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
-
-        footer {
-          background: black;
-          color: white;
-          padding: 2rem;
-          text-align: center;
+        .prediction-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        .prediction-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            color: var(--secondary);
+        }
+        .prediction-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 0;
+        }
+        .prediction-result {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        .prediction-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .prediction-yes {
+            background-color: var(--danger);
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+        }
+        .prediction-no {
+            background-color: var(--success);
+            color: white;
+            box-shadow: 0 0 15px rgba(107, 255, 107, 0.4);
+        }
+        .confidence-meter {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        .confidence-bar {
+            flex: 1;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-left: 1rem;
+            position: relative;
+        }
+        .confidence-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 2s ease-in-out;
+            background: linear-gradient(90deg, var(--success), var(--warning), var(--danger));
+        }
+        .confidence-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            font-size: 0.9rem;
+        }
+        .changes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        .change-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .change-item:hover {
+            transform: translateY(-3px);
+        }
+        .change-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .change-positive {
+            color: var(--success);
+        }
+        .change-negative {
+            color: var(--danger);
+        }
+        .change-neutral {
+            color: var(--secondary);
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+        .alert-success {
+            background-color: rgba(107, 255, 107, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        .alert-danger {
+            background-color: rgba(255, 107, 107, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+        .alert-info {
+            background-color: rgba(78, 205, 196, 0.2);
+            border: 1px solid var(--info);
+            color: var(--info);
+        }
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        .metrics-table th, .metrics-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255, 221, 153, 0.2);
+            text-align: center;
+        }
+        .metrics-table th {
+            background-color: rgba(255, 221, 153, 0.1);
         }
 
         form {
-          margin-top: 1.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+            margin: 3rem auto;
+            width: 520px;
+            padding: 3rem;
+            background-color: rgba(58, 5, 25, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4),
+                        inset 0 0 0 4px #ffdd99,
+                        inset 0 0 0 8px rgba(58, 5, 25, 0.8),
+                        inset 0 0 0 12px #ffdd99;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #f5f1e9;
+            position: relative;
+            overflow: hidden;
+            border: none;
         }
-
+        form::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 20px;
+            border: 4px solid transparent;
+            background: linear-gradient(45deg, 
+                        #ffdd99, 
+                        rgba(255, 221, 153, 0.7), 
+                        #ffdd99) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, 
+                        linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: borderGlow 3s linear infinite;
+        }
+        @keyframes borderGlow {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(135deg, transparent 90%, #ffdd99 90%) 0 0,
+                linear-gradient(45deg, transparent 90%, #ffdd99 90%) 0 0,
+                linear-gradient(-135deg, transparent 90%, #ffdd99 90%) 100% 0,
+                linear-gradient(-45deg, transparent 90%, #ffdd99 90%) 100% 0;
+            background-size: 30px 30px;
+            background-repeat: no-repeat;
+            z-index: -1;
+            opacity: 0.5;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        label {
+            font-weight: 700;
+            color: #ffdd99;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.8px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
         input, select {
-          padding: 0.5rem;
-          border-radius: 5px;
-          border: none;
-          outline: none;
-          font-size: 1rem;
-          background-color: #f5f1e9;
-          color: #3A0519;
-          font-family: 'Playfair Display', serif;
+            width: 100%;
+            padding: 1rem 1.4rem;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 221, 153, 0.4);
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #3A0519;
+            font-family: inherit;
+            font-size: 1.1rem;
+            transition: all 0.4s ease;
         }
-
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ffdd99;
+            box-shadow: 0 0 0 4px rgba(255, 221, 153, 0.3);
+            background-color: white;
+            transform: scale(1.01);
+        }
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
         button {
-          background-color: #ffdd99;
-          color: #3A0519;
-          padding: 0.75rem;
-          border: none;
-          border-radius: 5px;
-          font-size: 1rem;
-          cursor: pointer;
-          transition: background 0.3s ease;
+            background-color: #ffdd99;
+            color: #3A0519;
+            padding: 1rem 2.2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 180px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-
+        button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.3),
+                rgba(255, 255, 255, 0)
+            );
+            transform: rotate(30deg);
+            transition: all 0.6s ease;
+        }
         button:hover {
-          background-color: #ffb74d;
+            background-color: #f5f1e9;
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        button:hover::before {
+            transform: rotate(30deg) translate(20%, 20%);
+        }
+        .print-button {
+            background-color: rgba(255, 221, 153, 0.9);
+            border: 2px solid #ffdd99;
+        }
+        .print-button:hover {
+            background-color: #f5f1e9;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        form {
+            animation: fadeIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 221, 153, 0.2);
+        }
+        .stat-label {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        .chart-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+            height: 300px;
+            background: rgba(42, 4, 17, 0.7);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 0 10px rgba(255, 221, 153, 0.2);
+        }
+        @media (max-width: 768px) {
+            .chart-row {
+                flex-direction: column;
+            }
+            .chart-container {
+                min-width: 100%;
+            }
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .changes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .gpa-drop-yes {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        .gpa-drop-no {
+            color: var(--success);
+            font-weight: bold;
+        }
+        .record-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .record-item {
+            background: rgba(58, 5, 25, 0.7);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--secondary);
+            transition: transform 0.3s ease;
+        }
+        .record-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .record-card {
-          background: #2a0411;
-          padding: 1rem;
-          margin: 1rem 0;
-          border-radius: 8px;
-          box-shadow: 0 0 10px #ffdd9944;
-        }
-
-        .record-card h3 {
-          color: #ffdd99;
-        }
-
-        .record-card p {
-          color: #f5f1e9;
+        /* Print Styles */
+        @media print {
+            nav,
+            .print-button {
+                display: none !important;
+            }
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                background-color: var(--primary) !important;
+                color: var(--text-light) !important;
+            }
+            header {
+                background-image: url("{% static 'final_app/images/image1.jpeg' %}") !important;
+                background-size: cover !important;
+                background-position: center !important;
+                color: var(--text-light) !important;
+                text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .card,
+            .highlight-card,
+            .chart-container,
+            .record-item,
+            .prediction-card {
+                background: rgba(42, 4, 17, 0.7) !important;
+                box-shadow: 0 0 10px rgba(255, 221, 153, 0.2) !important;
+                color: var(--text-light) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .stat-label {
+                color: var(--secondary) !important;
+            }
+            canvas {
+                display: block !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .container {
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .chart-row,
+            .record-grid,
+            .card {
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
 <body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/predict/">Predict GPA</a>
+        <a href="/admin/">Admin</a>
+    </nav>
+    <header>
+        <h1 class="hero-title">Student Performance Dashboard</h1>
+        <p class="hero-subtitle">Empowering education with data-driven insights. Monitor, analyze, and elevate student success intelligently.</p>
+    </header>
+    <main class="container" id="dashboard-content">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_student">Select Student:</label>
+                {{ form.student }}
+            </div>
+            <div class="form-group">
+                <label for="id_semester_id">Predict for Semester:</label>
+                {{ form.semester_id }}
+            </div>
+            <div class="form-actions">
+                <button type="submit">Generate Report</button>
+                <button type="button" onclick="window.print()" class="print-button">
+                    <i class="fas fa-file-pdf"></i> Save as PDF
+                </button>
+            </div>
+        </form>
 
-<nav>
-    <a href="/">Home</a>
-    <a href="/predict/">Predict GPA</a>
-    <a href="/admin/">Admin</a>
-</nav>
+        {% if success %}
+            <div id="successMessage" class="alert alert-success">
+                <i class="fas fa-check-circle"></i> Report generated successfully!
+            </div>
+        {% endif %}
+        {% if error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i> {{ error }}
+            </div>
+        {% endif %}
 
-<header>
-    <h1>Predict GPA Drop</h1>
-    <p>Select a student and semester to analyze GPA trends and predict possible drops.</p>
-</header>
+        {% if predicted_records %}
+            <h2>Student Performance Overview</h2>
+        {% else %}
+            <h2>No Data Available</h2>
+        {% endif %}
 
-<section class="section3 content-box">
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Predict GPA</button>
-    </form>
-
-    {% if predicted_records %}
-        <div class="record-card">
-            <h3>{{ predicted_records.student.name }} - Semester {{ predicted_records.semester_id }}</h3>
-            {% if predicted_records.current_record %}
-                <p><strong>Average Grade:</strong> {{ predicted_records.current_record.avg_grade }}</p>
-                <p><strong>Attendance:</strong> {{ predicted_records.current_record.attendance_percentage }}%</p>
-                <p><strong>GPA Drop:</strong> {{ predicted_records.current_record.gpa_drop|yesno:"Yes,No" }}</p>
-            {% else %}
-                <p>No record found for this semester.</p>
+        {% if predicted_records %}
+            <!-- Enhanced Prediction Results Section -->
+            {% if prediction %}
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <i class="fas fa-brain prediction-icon"></i>
+                        <h2 class="prediction-title">AI Performance Prediction</h2>
+                    </div>
+                    {% if prediction.prediction == "No previous GPA records found for this student." or prediction.prediction == "This is the student's first semester — no prior GPA to compare or track." %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> {{ prediction.prediction }}
+                        </div>
+                    {% else %}
+                        <div class="prediction-result">
+                            <span class="stat-label">Predicted GPA Drop:</span>
+                            <div class="prediction-value {% if prediction.prediction == 'Yes' %}prediction-yes{% else %}prediction-no{% endif %}">
+                                {{ prediction.prediction }}
+                            </div>
+                        </div>
+                        {% if prediction.confidence %}
+                        <div class="confidence-meter">
+                            <span class="stat-label">Model Confidence:</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: {{ prediction.confidence }}%"></div>
+                                <div class="confidence-text">{{ prediction.confidence }}%</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if prediction.changes %}
+                        <div class="changes-grid">
+                            <div class="change-item">
+                                <div class="change-value {% if prediction.changes.grade_change > 0 %}change-positive{% elif prediction.changes.grade_change < 0 %}change-negative{% else %}change-neutral{% endif %}">
+                                    {% if prediction.changes.grade_change > 0 %}+{% endif %}{{ prediction.changes.grade_change }}
+                                </div>
+                                <div>Grade Change</div>
+                                <small>({{ prediction.changes.grade_change_pct }}%)</small>
+                            </div>
+                            <div class="change-item">
+                                <div class="change-value {% if prediction.changes.attendance_change > 0 %}change-positive{% elif prediction.changes.attendance_change < 0 %}change-negative{% else %}change-neutral{% endif %}">
+                                    {% if prediction.changes.attendance_change > 0 %}+{% endif %}{{ prediction.changes.attendance_change }}%
+                                </div>
+                                <div>Attendance Change</div>
+                                <small>({{ prediction.changes.attendance_change_pct }}%)</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if prediction.prediction == 'Yes' %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            <strong>Warning:</strong> The model predicts a potential GPA drop. Consider implementing intervention strategies.
+                        </div>
+                        {% else %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> 
+                            <strong>Good News:</strong> The model predicts stable academic performance for this semester.
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
             {% endif %}
 
-            <h3>Previous Records</h3>
-            {% for record in predicted_records.prev_records %}
-                <div class="record-card">
-                    <p><strong>Semester {{ record.semester_id }}:</strong></p>
-                    <ul>
-                        <li>Avg Grade: {{ record.avg_grade }}</li>
-                        <li>Attendance: {{ record.attendance_percentage }}%</li>
-                        <li>GPA Drop: {{ record.gpa_drop|yesno:"Yes,No" }}</li>
-                    </ul>
+            <!-- Charts Section -->
+            <div class="chart-row">
+                <div class="chart-container">
+                    <canvas id="gpaChart"></canvas>
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-</section>
+                <div class="chart-container">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
 
-<footer>
-    &copy; 2025 GPA Tracker | Data Science Project
-</footer>
+            <h2>Historical Records</h2>
+            <div class="record-grid">
+                {% for record in predicted_records.prev_records %}
+                    <div class="record-item">
+                        <h3>Semester {{ record.semester_id }}</h3>
+                        <div class="stat-item">
+                            <span class="stat-label">Grade:</span>
+                            <span>{{ record.avg_grade }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Attendance:</span>
+                            <span>{{ record.attendance_percentage }}%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">GPA Drop:</span>
+                            <span class="{% if record.gpa_drop %}gpa-drop-yes{% else %}gpa-drop-no{% endif %}">
+                                {{ record.gpa_drop|yesno:"Yes,No" }}
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </main>
 
-{% if predicted_records.data %}
-<div style="width: 90%; max-width: 700px; margin: 2rem auto;">
-    <canvas id="gpaChart" width="400" height="200"></canvas>
-</div>
-<!-- Load Chart.js from CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Safely output JSON data for JS -->
-<script id="labels-data" type="application/json">{{ predicted_records.labels|json_script:"labels-data" }}</script>
-<script id="gpa-data" type="application/json">{{ predicted_records.data|json_script:"gpa-data" }}</script>
-<script>
-    const labels = JSON.parse(document.getElementById('labels-data').textContent);
-    const gpaData = JSON.parse(document.getElementById('gpa-data').textContent);
-    const ctx = document.getElementById('gpaChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Average Grade Trend',
-                data: gpaData,
-                borderColor: '#ffdd99',
-                backgroundColor: 'rgba(255, 221, 153, 0.2)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: false, ticks: { color: '#f5f1e9' } },
-                x: { ticks: { color: '#f5f1e9' } }
-            },
-            plugins: {
-                legend: { labels: { color: '#f5f1e9' } }
+    <footer class="footer" style="text-align: center; padding: 2rem 0;">
+        <p style="margin: 0; color: var(--secondary); font-weight: 600;">&copy; 2025 Academic Analytics | Data Science Project</p>
+    </footer>
+
+    <script>
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                const labels = JSON.parse('{{ predicted_records.labels|escapejs }}');
+                const gpaData = JSON.parse('{{ predicted_records.avg_grades|escapejs }}');
+                const attendanceData = JSON.parse('{{ predicted_records.attendance_percentages|escapejs }}');
+
+                if (!labels.length || !gpaData.length) return;
+
+                const chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#f5f1e9',
+                                font: {
+                                    family: "'Playfair Display', serif"
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#f5f1e9' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#f5f1e9' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    }
+                };
+
+                new Chart(document.getElementById('gpaChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'GPA Trend',
+                            data: gpaData,
+                            borderColor: '#ffdd99',
+                            backgroundColor: 'rgba(255, 221, 153, 0.2)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: chartOptions
+                });
+
+                new Chart(document.getElementById('attendanceChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Attendance %',
+                            data: attendanceData,
+                            backgroundColor: 'rgba(255, 221, 153, 0.7)',
+                            borderRadius: 5
+                        }]
+                    },
+                    options: chartOptions
+                });
+
+                new Chart(document.getElementById('performanceChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Average Grade',
+                                data: gpaData,
+                                borderColor: '#ffdd99',
+                                backgroundColor: 'rgba(255, 221, 153, 0.2)',
+                                tension: 0.3,
+                                fill: false,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Attendance %',
+                                data: attendanceData,
+                                borderColor: '#6bff6b',
+                                backgroundColor: 'rgba(107, 255, 107, 0.2)',
+                                tension: 0.3,
+                                fill: false,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Performance Comparison by Semester',
+                                color: '#ffdd99'
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            legend: {
+                                labels: {
+                                    color: '#f5f1e9',
+                                    font: {
+                                        family: "'Playfair Display', serif"
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                ticks: { color: '#f5f1e9' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                ticks: { color: '#f5f1e9' },
+                                grid: { drawOnChartArea: false, color: 'rgba(255, 255, 255, 0.1)' },
+                                min: 0,
+                                max: 100
+                            },
+                            x: {
+                                ticks: { color: '#f5f1e9' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error rendering charts:", error);
             }
-        }
-    });
-</script>
-{% endif %}
-
+        });
+    </script>
 </body>
 </html>

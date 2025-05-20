@@ -109,6 +109,9 @@ class Student(models.Model):
     dob = models.DateField()
     dept = models.ForeignKey(Department, models.DO_NOTHING, blank=True, null=True)
 
+    def __str__(self):
+        return self.name 
+
     class Meta:
         managed = False
         db_table = 'student'
