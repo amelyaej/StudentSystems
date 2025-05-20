@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Student, GPARecord
 
+
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('stu_id', 'name')
