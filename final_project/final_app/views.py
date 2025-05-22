@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .forms import GPAPredictionForm
 from .models import GPARecord
+import numpy as np
 import pandas as pd
 import joblib
 import os
@@ -9,6 +10,25 @@ from django.conf import settings
 # Global variable to cache the model
 _model = None
 _model_metrics = None
+def attendance_predict_view(request):
+    prediction = None
+
+    if request.method == 'POST':
+        try:
+            attendance = float(request.POST.get('attendance'))
+
+            if 0 <= attendance <= 100:
+                model = joblib.load('final_app/models/attendance_gpa_model.pkl')
+                prediction = model.predict(np.array([[attendance]]))[0]
+                grade = model.predict(np.array([[attendance]]))[0]
+                gpa = round((grade / 100) * 4.0, 2) # Assuming a scale of 0-100 to 4.0  
+                prediction = gpa
+            else:
+                prediction = "Invalid input"
+        except Exception as e:
+            prediction = f"Input the number!"
+
+    return render(request, 'attendance_predict.html', {'prediction': prediction})
 
 def get_model():
     """

@@ -1,239 +1,393 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Data Science Project</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html, body {
-      font-family: 'Playfair Display', serif;
-      scroll-behavior: smooth;
-      overflow-x: hidden;
-      background-color: #3A0519;
-      color: #f5f1e9;
-    }
-
-    header, section {
-      width: 100vw;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 4rem 2rem;
-      position: relative;
-      text-align: center;
-    }
-
-    header {
-      background-image: url('{% static 'final_app/images/image1.jpeg' %}');
-      background-attachment: fixed;
-      background-size: cover;
-      background-position: center;
-      color: #f5f1e9;
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      transition: color 0.3s ease;
-    }
-
-    header h1:hover {
-      color: #ffdd99;
-    }
-
-    header p {
-      font-size: 1.2rem;
-      max-width: 700px;
-    }
-
-    nav {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 100%;
-      background-color: black;
-      display: flex;
-      justify-content: flex-end;
-      padding: 1rem 2rem;
-      z-index: 10000;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-    }
-
-    nav a {
-      margin-right: 1.5rem;
-      color: #f5f1e9;
-      text-decoration: none;
-      font-weight: bold;
-      transition: color 0.3s ease;
-    }
-
-    nav a:hover {
-      color: #ffdd99;
-    }
-
-    .parallax-section {
-      background-attachment: fixed;
-      background-size: cover;
-      background-position: center;
-      color: #f5f1e9;
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
-    }
-
-    .section1 {
-      background-color: #3A0519;
-      color: white;
-    }
-
-    .section2 {
-      background-color: #3D0C11;
-    }
-
-    .section3 {
-      background-image: url('{% static 'final_app/images/image2.jpeg' %}');
-    }
-
-    .content-box {
-      background-color: black;
-      padding: 2rem;
-      border-radius: 10px;
-      max-width: 700px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(255, 221, 153, 0.4);
-    }
-
-    h2 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      color: #ffdd99;
-    }
-
-    p {
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    footer {
-      background: black;
-      color: white;
-      padding: 2rem;
-      text-align: center;
-    }
-
-    .icon {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: #ffdd99;
-    }
-
-    .floating-icon {
-      position: absolute;
-      font-size: 3rem;
-      color: white;
-      opacity: 0.6;
-      animation: float 6s ease-in-out infinite;
-    }
-
-    .float1 { top: 10%; left: 20%; animation-delay: 0s; }
-    .float2 { top: 30%; right: 15%; animation-delay: 2s; }
-    .float3 { bottom: 15%; left: 10%; animation-delay: 4s; }
-
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-30px); }
-      100% { transform: translateY(0); }
-    }
-
-    canvas {
-      max-width: 80vw;
-      height: auto;
-    }
-
-    @media (max-width: 768px) {
-      header h1 { font-size: 2.2rem; }
-      h2 { font-size: 1.8rem; }
-      p { font-size: 1rem; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group 7 Data Science Project</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#800020',secondary:'#1A1A1A'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+html {
+scroll-behavior: smooth;
+}
+body {
+font-family: 'Montserrat', sans-serif;
+overflow-x: hidden;
+}
+.parallax-section {
+position: relative;
+height: 100vh;
+overflow: hidden;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.parallax-bg {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-size: cover;
+background-position: center;
+transform: translateZ(-1px) scale(2);
+z-index: -1;
+}
+.content {
+position: relative;
+z-index: 1;
+}
+.feature-card {
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.feature-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+.nav-link {
+position: relative;
+transition: color 0.3s ease;
+}
+.nav-link::after {
+content: '';
+position: absolute;
+bottom: -5px;
+left: 0;
+width: 0;
+height: 2px;
+background-color: #FF0000;
+transition: width 0.3s ease;
+}
+.nav-link:hover::after {
+width: 100%;
+}
+input:focus {
+outline: none;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+</style>
 </head>
-<body>
-  <nav>
-    <a href="#about">Project</a>
-    <a href="#cases">Cases</a>
-    <a href="#target">Target</a>
-    <a href="#aboutPage">About</a>
-  </nav>
-
-  <header id="about">
-    <i class="fas fa-chart-line icon"></i>
-    <h1>Group 7 | Data Science Project of Faculty Computing Student Information</h1>
-    <p>Discover how data science can be applied in real-world scenarios. Our project dives deep into data-driven decisions for improved education insights.</p>
-  </header>
-
-  <section class="parallax-section section2" id="cases">
-    <div class="floating-icon float1"><i class="fas fa-cogs"></i></div>
-    <div class="floating-icon float2"><i class="fas fa-brain"></i></div>
-    <div class="floating-icon float3"><i class="fas fa-database"></i></div>
-    <div class="content-box">
-      <i class="fas fa-lightbulb icon"></i>
-      <h2>Project Use Cases</h2>
-      <p>Used in predicting student performance, clustering engagement, and analyzing academic outcomes. Built with interactive visualizations and real-time data handling.</p>
-    </div>
-  </section>
-
-  <section class="parallax-section section3" id="target">
-    <div class="content-box">
-      <i class="fas fa-user-group icon"></i>
-      <h2>Target Users</h2>
-      <p>The project is intended for university administrators, educators, and data analysts who aim to enhance student success and institutional performance through data insights.</p>
-    </div>
-  </section>
-
-  <section id="aboutPage">
-    <!-- About Page Placeholder -->
-  </section>
-
-  <footer>
-    <p>&copy; 2025 Group 7 Data Science Project. All rights reserved.</p>
-  </footer>
-
-  <script>
-    const ctx = document.getElementById('contributionChart')?.getContext('2d');
-    if (ctx) {
-      const contributionChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Member A', 'Member B', 'Member C', 'Member D'],
-          datasets: [{
-            label: 'Features Contributed',
-            data: [12, 19, 7, 14],
-            backgroundColor: '#ffdd99',
-            borderColor: '#800020',
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    }
-  </script>
+<body class="bg-black text-white">
+<header class="fixed top-0 left-0 w-full z-50 bg-secondary shadow-lg">
+<div class="container mx-auto px-6 py-4 flex justify-between items-center">
+<div class="flex items-center">
+<h1 class="text-2xl font-['Pacifico'] text-primary">Group 7</h1>
+</div>
+<nav class="hidden md:flex space-x-8">
+<a href="#home" class="nav-link text-white hover:text-primary">Home</a>
+<a href="#features" class="nav-link text-white hover:text-primary">Features</a>
+<a href="#target" class="nav-link text-white hover:text-primary">Target Users</a>
+<a href="#contact" class="nav-link text-white hover:text-primary">Contact</a>
+</nav>
+<div class="md:hidden flex items-center">
+<button class="text-white focus:outline-none">
+<div class="w-10 h-10 flex items-center justify-center">
+<i class="ri-menu-line ri-2x"></i>
+</div>
+</button>
+</div>
+</div>
+</header>
+<section id="home" class="parallax-section">
+<div class="parallax-bg opacity-60" style="background-image: url('https://readdy.ai/api/search-image?query=black%20and%20white%20granite%20texture%2C%20dramatic%20low%20exposure%20architectural%20detail%2C%20minimalist%20composition%2C%20high%20contrast%20monochrome%20photography%2C%20luxury%20stone%20surface&width=1920&height=1080&seq=1&orientation=landscape');"></div>
+<div class="absolute inset-0 bg-black bg-opacity-60"></div>
+<div class="content text-center px-6 max-w-5xl">
+<h1 class="text-4xl md:text-6xl font-bold mb-8 leading-tight">
+<span class="text-white">Group 7 </span>
+<span class="text-primary">Data Science Project</span>
+</h1>
+<p class="text-xl md:text-2xl text-gray-200 mb-10">Faculty Computing Student Information Analysis</p>
+<a href="#features" class="inline-block bg-primary text-white px-8 py-3 rounded-button font-semibold hover:bg-opacity-90 transition-all shadow-lg whitespace-nowrap">
+Explore Features
+</a>
+</div>
+</section>
+<section id="features" class="parallax-section bg-primary bg-opacity-10">
+<div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-primary/20"></div>
+<div class="absolute inset-0 bg-black bg-opacity-70"></div>
+<div class="content w-full max-w-7xl mx-auto px-6">
+<h2 class="text-3xl md:text-5xl font-bold mb-16 text-center">
+<span class="text-white">Machine Learning </span>
+<span class="text-primary">Features</span>
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+<!-- Hera Feature -->
+<div class="feature-card bg-secondary bg-opacity-80 rounded-lg p-8 border-l-4 border-primary backdrop-blur-sm">
+<div class="flex items-start mb-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-20 rounded-full mr-4">
+<i class="ri-user-star-line ri-xl text-primary"></i>
+</div>
+<h3 class="text-2xl font-bold text-primary">Student Age Analysis</h3>
+</div>
+<p class="text-gray-300 mb-6">Sophisticated analysis of student age demographics at university entry, providing valuable insights into maturity levels and their impact on academic journey. Discover optimal age-related patterns for educational success.</p>
+<div class="flex justify-between items-center">
+<span class="text-sm text-gray-400">Feature by Hera</span>
+<a href="#" class="px-4 py-2 bg-primary hover:bg-opacity-80 text-white text-sm rounded-button transition-all whitespace-nowrap">
+Explore Analysis
+</a>
+</div>
+<!-- Replace href="#" with your Age Analysis page URL -->
+</div>
+<!-- Dadia Feature -->
+<div class="feature-card bg-secondary bg-opacity-80 rounded-lg p-8 border-l-4 border-primary backdrop-blur-sm">
+<div class="flex items-start mb-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-20 rounded-full mr-4">
+<i class="ri-bar-chart-box-line ri-xl text-primary"></i>
+</div>
+<h3 class="text-2xl font-bold text-primary">GPA Tracker Analysis</h3>
+</div>
+<p class="text-gray-300 mb-6">Comprehensive GPA monitoring system that tracks academic performance trends, providing detailed insights into student progress and identifying areas for improvement across different academic periods.</p>
+<div class="flex justify-between items-center">
+<span class="text-sm text-gray-400">Feature by Dadia</span>
+<a href="#" class="px-4 py-2 bg-primary hover:bg-opacity-80 text-white text-sm rounded-button transition-all whitespace-nowrap">
+View Tracker
+</a>
+</div>
+<!-- Replace href="#" with your GPA Tracker page URL -->
+</div>
+<!-- Amel Feature -->
+<div class="feature-card bg-secondary bg-opacity-80 rounded-lg p-8 border-l-4 border-primary backdrop-blur-sm">
+<div class="flex items-start mb-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-20 rounded-full mr-4">
+<i class="ri-calendar-check-line ri-xl text-primary"></i>
+</div>
+<h3 class="text-2xl font-bold text-primary">Attendance-GPA Correlation</h3>
+</div>
+<p class="text-gray-300 mb-6">Comprehensive analysis of the relationship between attendance patterns and academic performance. Uncover key insights into how class participation influences GPA and academic excellence.</p>
+<div class="flex justify-between items-center">
+<span class="text-sm text-gray-400">Feature by Amel</span>
+<a href="{% url 'attendance_predict' %}" class="px-4 py-2 bg-primary hover:bg-opacity-80 text-white text-sm rounded-button transition-all whitespace-nowrap">
+View Correlation
+</a>
+</div>
+<!-- Replace href="#" with your Attendance-GPA Analysis page URL -->
+</div>
+<!-- Zonda Feature -->
+<div class="feature-card bg-secondary bg-opacity-80 rounded-lg p-8 border-l-4 border-primary backdrop-blur-sm">
+<div class="flex items-start mb-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-20 rounded-full mr-4">
+<i class="ri-medal-line ri-xl text-primary"></i>
+</div>
+<h3 class="text-2xl font-bold text-primary">Performance Consistency Tracking</h3>
+</div>
+<p class="text-gray-300 mb-6">Elite analysis system that identifies and monitors students maintaining consistent academic excellence. Recognize patterns of sustained performance and provide targeted support for maintaining academic standards.</p>
+<div class="flex justify-between items-center">
+<span class="text-sm text-gray-400">Feature by Zonda</span>
+<a href="#" class="px-4 py-2 bg-primary hover:bg-opacity-80 text-white text-sm rounded-button transition-all whitespace-nowrap">
+View Performance
+</a>
+</div>
+<!-- Replace href="#" with your Performance Consistency page URL -->
+</div>
+</div>
+</div>
+</section>
+<section id="target" class="parallax-section">
+<div class="parallax-bg opacity-40" style="background-image: url('https://readdy.ai/api/search-image?query=elegant%20arrangement%20of%20dark%20red%20roses%20in%20luxurious%20interior%2C%20low%20key%20photography%2C%20moody%20atmosphere%2C%20dramatic%20shadows%2C%20professional%20studio%20lighting%2C%20artistic%20floral%20composition%20with%20black%20background&width=1920&height=1080&seq=3&orientation=landscape');"></div>
+<div class="absolute inset-0 bg-black bg-opacity-70"></div>
+<div class="content w-full max-w-7xl mx-auto px-6">
+<h2 class="text-3xl md:text-5xl font-bold mb-16 text-center">
+<span class="text-white">Target </span>
+<span class="text-primary">Users</span>
+</h2>
+<p class="text-xl text-center text-gray-200 mb-16 max-w-4xl mx-auto">
+This project is designed for data analysts, decision-makers, and organizations looking to leverage insights from their data. With an intuitive interface and powerful Machine Learning backend, it fits both technical and non-technical users.
+</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="feature-card bg-secondary bg-opacity-80 rounded-lg p-8 text-center">
+<div class="w-20 h-20 mx-auto flex items-center justify-center bg-primary bg-opacity-20 rounded-full mb-6">
+<i class="ri-line-chart-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-2xl font-bold text-primary mb-4">Data Analysts</h3>
+<p class="text-gray-300">Technical professionals who need powerful tools to extract meaningful insights from educational data. Our platform provides advanced analytics capabilities with intuitive visualization tools.</p>
+</div>
+<div class="feature-card bg-secondary bg-opacity-80 rounded-lg p-8 text-center">
+<div class="w-20 h-20 mx-auto flex items-center justify-center bg-primary bg-opacity-20 rounded-full mb-6">
+<i class="ri-user-settings-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-2xl font-bold text-primary mb-4">Decision Makers</h3>
+<p class="text-gray-300">Administrators and faculty leaders who rely on data-driven insights to make strategic decisions about curriculum, resource allocation, and student support initiatives.</p>
+</div>
+<div class="feature-card bg-secondary bg-opacity-80 rounded-lg p-8 text-center">
+<div class="w-20 h-20 mx-auto flex items-center justify-center bg-primary bg-opacity-20 rounded-full mb-6">
+<i class="ri-building-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-2xl font-bold text-primary mb-4">Organizations</h3>
+<p class="text-gray-300">Educational institutions and companies seeking to leverage student data to improve outcomes, optimize operations, and create more effective learning environments.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="about" class="bg-black py-20">
+<div class="max-w-7xl mx-auto px-6">
+<h2 class="text-3xl md:text-5xl font-bold mb-16 text-center">
+<span class="text-white">About </span>
+<span class="text-primary">Us</span>
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div class="text-center">
+<div class="w-24 h-24 mx-auto bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+<i class="ri-user-star-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-xl font-bold text-primary mb-2">Hera</h3>
+<p class="text-gray-400">012202300037</p>
+</div>
+<div class="text-center">
+<div class="w-24 h-24 mx-auto bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+<i class="ri-database-2-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-xl font-bold text-primary mb-2">Dadia</h3>
+<p class="text-gray-400">012202300002</p>
+</div>
+<div class="text-center">
+<div class="w-24 h-24 mx-auto bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+<i class="ri-bar-chart-box-line ri-2x text-primary"></i>
+</div>
+<h3 class="text-xl font-bold text-primary mb-2">Amel</h3>
+<p class="text-gray-400">012202300033</p>
+</div>
+<div class="text-center">
+<div class="w-24 h-24 mx-auto bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+<i class="ri-ai-generate ri-2x text-primary"></i>
+</div>
+<h3 class="text-xl font-bold text-primary mb-2">Zonda</h3>
+<p class="text-gray-400">012202300067</p>
+</div>
+</div>
+<div class="text-center mt-16">
+<p class="text-gray-400 mb-8">Our last Final Project on 5th Semester TT</p>
+<div class="flex justify-center space-x-6">
+<a href="https://github.com/shynnyy/final_destination" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-12 h-12 flex items-center justify-center bg-secondary bg-opacity-50 rounded-full">
+<i class="ri-github-fill ri-lg"></i>
+</div>
+</a>
+<a href="https://www.linkedin.com/in/amelyaenjelita/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-12 h-12 flex items-center justify-center bg-secondary bg-opacity-50 rounded-full">
+<i class="ri-linkedin-box-fill ri-lg"></i>
+</div>
+</a>
+<a href="#" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-12 h-12 flex items-center justify-center bg-secondary bg-opacity-50 rounded-full">
+<i class="ri-twitter-fill ri-lg"></i>
+</div>
+</a>
+</div>
+</div>
+</div>
+</section>
+<footer class="bg-secondary py-10">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-center">
+<div class="mb-6 md:mb-0">
+<h1 class="text-2xl font-['Pacifico'] text-primary">Group 7</h1>
+<p class="text-gray-400 mt-2">Data Science Project © 2025</p>
+</div>
+<div class="flex space-x-6">
+<a href="https://github.com/shynnyy/final_destination" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-10 h-10 flex items-center justify-center">
+<i class="ri-github-fill ri-lg"></i>
+</div>
+</a>
+<a href="https://www.linkedin.com/in/amelyaenjelita/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-10 h-10 flex items-center justify-center">
+<i class="ri-linkedin-box-fill ri-lg"></i>
+</div>
+</a>
+<a href="#" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-10 h-10 flex items-center justify-center">
+<i class="ri-twitter-fill ri-lg"></i>
+</div>
+</a>
+<a href="https://www.instagram.com/amelyajlta" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-10 h-10 flex items-center justify-center">
+<i class="ri-instagram-fill ri-lg"></i>
+</div>
+</a>
+</div>
+</div>
+<div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+<p>Designed and developed by Group 7 Data Science Team. All rights reserved.</p>
+</div>
+</div>
+</footer>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// Parallax effect
+window.addEventListener('scroll', function() {
+const parallaxBgs = document.querySelectorAll('.parallax-bg');
+const scrollPosition = window.pageYOffset;
+parallaxBgs.forEach(bg => {
+const section = bg.closest('.parallax-section');
+const sectionTop = section.offsetTop;
+const sectionHeight = section.offsetHeight;
+if (scrollPosition >= sectionTop - window.innerHeight &&
+scrollPosition <= sectionTop + sectionHeight) {
+const speed = 0.5;
+const yPos = (scrollPosition - sectionTop) * speed;
+bg.style.transform = `translateY(${yPos}px)`;
+}
+});
+});
+// Mobile menu toggle
+const menuButton = document.querySelector('.ri-menu-line').parentElement.parentElement;
+const mobileMenu = document.createElement('div');
+mobileMenu.classList.add('mobile-menu', 'fixed', 'inset-0', 'bg-black', 'bg-opacity-95', 'z-50', 'flex', 'flex-col', 'items-center', 'justify-center', 'hidden');
+mobileMenu.innerHTML = `
+<button class="absolute top-6 right-6 text-white focus:outline-none">
+<div class="w-10 h-10 flex items-center justify-center">
+<i class="ri-close-line ri-2x"></i>
+</div>
+</button>
+<nav class="flex flex-col space-y-8 text-center">
+<a href="#home" class="text-white text-2xl hover:text-primary">Home</a>
+<a href="#features" class="text-white text-2xl hover:text-primary">Features</a>
+<a href="#target" class="text-white text-2xl hover:text-primary">Target Users</a>
+<a href="#contact" class="text-white text-2xl hover:text-primary">Contact</a>
+</nav>
+`;
+document.body.appendChild(mobileMenu);
+menuButton.addEventListener('click', function() {
+mobileMenu.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+});
+const closeButton = mobileMenu.querySelector('.ri-close-line').parentElement.parentElement;
+closeButton.addEventListener('click', function() {
+mobileMenu.classList.add('hidden');
+document.body.style.overflow = '';
+});
+const mobileLinks = mobileMenu.querySelectorAll('a');
+mobileLinks.forEach(link => {
+link.addEventListener('click', function() {
+mobileMenu.classList.add('hidden');
+document.body.style.overflow = '';
+});
+});
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+anchor.addEventListener('click', function(e) {
+e.preventDefault();
+const targetId = this.getAttribute('href');
+const targetElement = document.querySelector(targetId);
+if (targetElement) {
+window.scrollTo({
+top: targetElement.offsetTop,
+behavior: 'smooth'
+});
+}
+});
+});
+});
+</script>
 </body>
 </html>
