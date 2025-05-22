@@ -1,0 +1,125 @@
+<!-- {% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    :root {
+        --primary: #3A0519;
+        --secondary: #ffdd99;
+        --text-light: #f5f1e9;
+        --text-dark: #2a0411;
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --primary: #ffffff;
+            --secondary: #3A0519;
+            --text-light: #3A0519;
+        }
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: var(--primary);
+        color: var(--text-light);
+    }
+
+    .module {
+        background-color: black;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(255, 221, 153, 0.4);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .module h2 {
+        background-color: var(--secondary);
+        color: var(--primary);
+        margin: 0;
+        padding: 15px 20px;
+        font-size: 1.5rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: black;
+        color: var(--text-light);
+    }
+
+    th, td {
+        text-align: left;
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--secondary);
+    }
+
+    th {
+        background-color: var(--primary);
+        color: var(--secondary);
+    }
+
+    .button {
+        display: inline-block;
+        padding: 6px 12px;
+        background-color: var(--secondary);
+        color: var(--primary);
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+        background-color: #f5f1e9;
+    }
+
+    .footer {
+        text-align: center;
+        padding: 20px;
+        color: white;
+        background: black;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <h2>Admin Dashboard</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>App</th>
+                <th>Models</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in app_list %}
+            <tr>
+                <td>{{ app.name }}</td>
+                <td>
+                    <ul>
+                        {% for model in app.models %}
+                        <li>
+                            {{ model.name }}
+                            <a href="{{ model.admin_url }}" class="button">View</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <a href="{% url 'admin:index' %}" class="button">Home</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div class="footer">
+    &copy; {% now "Y" %} Academic Analytics | Data Science Project
+</div>
+{% endblock %} -->
