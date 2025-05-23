@@ -1,10 +1,10 @@
 from django.urls import path
-from .views import retrain_model_view, predict_gpa, home
+from .views import retrain_model_view, predict_gpa, home, attendance_predict_view
 from django.contrib import admin
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('predict-attendance/', views.attendance_predict_view, name='attendance_predict'),
+    path('', home, name='home'),
+    path('predict-attendance/', attendance_predict_view, name='attendance_predict'),
     path('admin/', admin.site.urls),
     path('retrain-model/<int:model_id>/', retrain_model_view, name='retrain-model'),
     # path('', home, name='home'),

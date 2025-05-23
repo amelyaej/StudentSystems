@@ -183,7 +183,7 @@ class MLModel(models.Model):
     description = models.TextField()
     model_type = models.CharField(max_length=20, choices=MODEL_TYPES)
     use_case = models.CharField(max_length=100)
-    dataset = models.CharField(max_length=100)
+    dataset = models.FileField(upload_to='datasets/') 
     file_path = models.FileField(upload_to='ml_models/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     creator = models.CharField(max_length=50, choices=CREATOR_CHOICES, default='Ijlal')
