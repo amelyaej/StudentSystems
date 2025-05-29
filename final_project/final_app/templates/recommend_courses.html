@@ -1,0 +1,348 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Course Recommendation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      font-family: 'Playfair Display', serif;
+      scroll-behavior: smooth;
+      background-color: #3A0519;    
+      color: #f5f1e9;
+    }
+
+    /* === HEADER STYLES === */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background-color: #1A1A1A;
+      padding: 1rem 3rem 1rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-logo {
+      font-family: 'Pacifico', cursive;
+      font-size: 1.5rem;
+      color: #800020;
+      margin: 0;
+    }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+      margin-right: 1.5rem;
+    }
+
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      position: relative;
+      transition: color 0.3s ease;
+      white-space: nowrap;
+      padding: 0.5rem 0;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: #FF0000;
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link:hover::after {
+      color: #FF0000;
+    }
+
+    .mobile-menu-button {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .hero {
+      width: 100vw;
+      min-height: 100vh;
+      background-image: url('{% static "final_app/images/image1.jpeg" %}');
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      color: #f5f1e9;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 8rem 2rem 4rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: #ffdd99;
+    }
+
+    form {
+      background-color: black;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 221, 153, 0.4);
+      width: 90%;
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    form p {
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+
+    form input[type="text"],
+    form input[type="email"],
+    form select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 5px;
+      border: none;
+      margin-top: 0.3rem;
+    }
+
+    form button {
+      background-color: #ffdd99;
+      color: black;
+      padding: 0.6rem 1.5rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    form button:hover {
+      background-color: #e6c97e;
+    }
+
+    table {
+      margin: 2rem auto;
+      width: 90%;
+      max-width: 800px;
+      border-collapse: collapse;
+      background-color: black;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(255, 221, 153, 0.4);
+    }
+
+    th, td {
+      padding: 1rem;
+      border-bottom: 1px solid #333;
+      text-align: center;
+    }
+
+    th {
+      background-color: #ffdd99;
+      color: black;
+    }
+
+    .explanation-box {
+      background-color: #1a1a1a;
+      padding: 1.5rem;
+      margin: 1.5rem auto;
+      width: 90%;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 221, 153, 0.3);
+    }
+
+    .explanation-box h3 {
+      color: #ffdd99;
+      margin-bottom: 1rem;
+    }
+
+    .explanation-box ul {
+      list-style: disc;
+      padding-left: 1.2rem;
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: #1A1A1A;
+      color: #ffdd99;
+      margin-top: 3rem;
+    }
+
+    .form-field-error {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+    }
+
+    .form-field-help {
+      color: #ccc;
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 0.8rem 1.5rem;
+      }
+
+      .header-logo {
+        font-size: 1.2rem;
+      }
+
+      nav {
+        display: none;
+      }
+
+      .mobile-menu-button {
+        display: block;
+      }
+
+      .mobile-menu {
+        display: none;
+        background-color: #1A1A1A;
+        padding: 1rem;
+      }
+
+      .mobile-menu.active {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1 class="header-logo">CourseAI</h1>
+    <nav>
+      <a href="/" class="nav-link">Home</a>
+      <a href="/admin/" class="nav-link">Admin</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="predict">
+    <h1>Course Recommendation for Instructor</h1>
+    <form method="post" action="/recommend-courses/">
+      {% csrf_token %}
+      {% for field in form %}
+        <p>
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.errors %}
+            <div class="form-field-error">{{ field.errors }}</div>
+          {% endif %}
+          {% if field.help_text %}
+            <small class="form-field-help">{{ field.help_text }}</small>
+          {% endif %}
+        </p>
+      {% endfor %}
+      <button type="submit">Predict Courses</button>
+    </form>
+    {% if error %}
+      <p style="color: red; margin-top: 1rem;">{{ error }}</p>
+    {% endif %}
+  </section>
+
+  <!-- Results Section -->
+  {% if results %}
+  <section id="result">
+    <table>
+      <thead>
+        <tr>
+          <th>Course Name</th>
+          <th>Predicted Avg Grade</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in results %}
+        <tr>
+          <td>{{ course.course_name }}</td>
+          <td>{{ course.predicted_avg_grade|floatformat:"2" }}</td>
+          <td>{{ course.reason }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="explanation-box">
+      <h3>Explanation of Recommendation Reasons:</h3>
+      <ul>
+        <li><strong>Matches course difficulty:</strong> The difficulty level of this course aligns well with the instructor’s strengths based on past data.</li>
+        <li><strong>Recommended based on overall fit:</strong> This course is recommended because it is a good overall fit considering multiple factors, even if no single factor stands out strongly.</li>
+      </ul>
+    </div>
+
+    <div class="explanation-box">
+      <h3>Explanation of Table Columns:</h3>
+      <ul>
+        <li><strong>Course Name:</strong> The name of the course recommended for the instructor.</li>
+        <li><strong>Predicted Avg Grade:</strong> The expected average grade students might achieve in this course, helping instructors plan accordingly.</li>
+        <li><strong>Reason:</strong> The rationale behind why this course is recommended.</li>
+      </ul>
+    </div>
+
+    {% if recommendation_summary %}
+      <p style="text-align: center; margin-top: 1rem;"><strong>{{ recommendation_summary }}</strong></p>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Academic Analytics | Data Science Project</p>
+  </footer>
+
+  <!-- Mobile Menu Toggle Script -->
+  <script>
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const mobileMenu = document.querySelector('.mobile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('active');
+    });
+  </script>
+
+  <!-- Parallax Scroll Effect -->
+  <script>
+    window.addEventListener('scroll', () => {
+      const hero = document.querySelector('.hero');
+      const scrollPosition = window.scrollY;
+      hero.style.backgroundPositionY = `${scrollPosition * 0.5}px`;
+    });
+  </script>
+
+</body>
+</html>

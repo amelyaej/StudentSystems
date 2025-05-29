@@ -12,6 +12,9 @@ import csv
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from .forms import CourseRecommendationForm
+from django.db import connection
+import pickle
 
 # Global model and metrics cache
 _model = None
@@ -264,3 +267,109 @@ def retrain_model_view(request):
     return render(request, 'admin/retrain.html', {
         'metrics': metrics
     })
+
+def recommend_courses(request):
+    results = None
+    instructor_name = None
+    semester_target = None
+    error = None
+    recommendation_summary = None
+
+    if request.method == 'POST':
+        form = CourseRecommendationForm(request.POST)
+        if form.is_valid():
+            instructor_name = form.cleaned_data['instructor_name']
+            latest_semester_id = form.cleaned_data['latest_semester_id']
+            semester_target = latest_semester_id + 1
+            override_attendance = form.cleaned_data.get('avg_attendance')
+            override_assessment = form.cleaned_data.get('avg_assessment_score')
+
+            # Load the trained model
+            with open("final_app/models/instructor_course_model.pkl", "rb") as f:
+                model = pickle.load(f)
+
+            # First, find instructor_id from instructor_name
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT instructor_id FROM instructor WHERE instructor_name = %s", [instructor_name])
+                row = cursor.fetchone()
+                if row:
+                    instructor_id = row[0]
+                else:
+                    error = f"Instructor '{instructor_name}' not found."
+                    instructor_id = None
+
+            if instructor_id:
+                # Query courses the instructor has taught up to latest_semester_id
+                query = """
+                SELECT 
+                    c.course_id,
+                    c.course_name,
+                    cd.difficulty_level,
+                    AVG(att.attendance_percentage) AS avg_attendance,
+                    AVG(a.score) AS avg_assessment_score
+                FROM course_instructor ci
+                JOIN course c ON ci.course_id = c.course_id
+                JOIN course_difficulty cd ON c.course_id = cd.course_id
+                JOIN enrollment e ON e.course_id = ci.course_id AND e.semester_id = ci.semester_id
+                LEFT JOIN attendance att ON att.enroll_id = e.enroll_id
+                LEFT JOIN assessment a ON a.enroll_id = e.enroll_id
+                WHERE ci.instructor_id = %s AND ci.semester_id <= %s
+                GROUP BY c.course_id, c.course_name, cd.difficulty_level
+                """
+                df = pd.read_sql_query(query, connection, params=[instructor_id, latest_semester_id])
+
+                if df.empty:
+                    error = "No data found for this instructor and semester."
+                else:
+                    # Override avg_attendance and avg_assessment_score if provided
+                    if override_attendance is not None:
+                        df['avg_attendance'] = override_attendance
+                    if override_assessment is not None:
+                        df['avg_assessment_score'] = override_assessment
+
+                    difficulty_map = {'Easy': 0, 'Medium': 1, 'Hard': 2}
+                    df['difficulty_level_encoded'] = df['difficulty_level'].map(difficulty_map)
+
+                    X = df[['difficulty_level_encoded', 'avg_attendance', 'avg_assessment_score']]
+                    df['predicted_avg_grade'] = model.predict(X)
+
+                    def generate_reason(row):
+                        reasons = []
+                        if row['predicted_avg_grade'] > 85:
+                            reasons.append("High historical grades")
+                        if row['avg_attendance'] > 85:
+                            reasons.append("High average attendance")
+                        if row['difficulty_level'] == 'Hard':
+                            reasons.append("Matches course difficulty")
+                        if not reasons:
+                            return "Recommended based on overall fit"
+                        return " & ".join(reasons)
+
+                    df['reason'] = df.apply(generate_reason, axis=1)
+                    df = df.sort_values(by='predicted_avg_grade', ascending=False)
+
+                    results = df[['course_id', 'course_name', 'predicted_avg_grade', 'reason']].to_dict(orient='records')
+
+                    # Create a summary recommendation
+                    best_course = df.loc[df['predicted_avg_grade'].idxmax()]
+                    recommendation_summary = (
+                        f"So based on this table, instructor {instructor_name} is best suited for teaching "
+                        f"{best_course['course_name']} in the next semester with an expected performance accuracy of "
+                        f"{best_course['predicted_avg_grade']:.2f}%."
+                    )
+            else:
+                results = None
+        else:
+            error = "Invalid form submission."
+    else:
+        form = CourseRecommendationForm()
+
+    context = {
+        'form': form,
+        'results': results,
+        'instructor_name': instructor_name,
+        'semester_target': semester_target,
+        'error': error,
+        'recommendation_summary': recommendation_summary,
+    }
+    return render(request, 'recommend_courses.html', context)

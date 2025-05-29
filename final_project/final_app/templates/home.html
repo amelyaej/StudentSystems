@@ -127,12 +127,12 @@ Explore Features
 <div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-20 rounded-full mr-4">
 <i class="ri-user-star-line ri-xl text-primary"></i>
 </div>
-<h3 class="text-2xl font-bold text-primary">Student Age Analysis</h3>
+<h3 class="text-2xl font-bold text-primary">Course Suggestions predictor for Instructor</h3>
 </div>
-<p class="text-gray-300 mb-6">Sophisticated analysis of student age demographics at university entry, providing valuable insights into maturity levels and their impact on academic journey. Discover optimal age-related patterns for educational success.</p>
+<p class="text-gray-300 mb-6">Based on historical performance and student grade trends, this system predicts which courses are best suited for each instructor in the upcoming semester. Recommendations are made by analyzing course difficulty levels, average attendance, and past exam results.</p>
 <div class="flex justify-between items-center">
 <span class="text-sm text-gray-400">Feature by Hera</span>
-<a href="#" class="px-4 py-2 bg-primary hover:bg-opacity-80 text-white text-sm rounded-button transition-all whitespace-nowrap">
+<a href="{% url 'recommend_courses' %}" class="px-4 py-2 bg-primary hover:bg-opacity-80 text-white text-sm rounded-button transition-all whitespace-nowrap">
 Explore Analysis
 </a>
 </div>
