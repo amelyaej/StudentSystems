@@ -1,0 +1,76 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    body {
+        background-color: var(--primary);
+        color: var(--text-light);
+        font-family: 'Playfair Display', serif;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 60px auto;
+        padding: 30px;
+        background-color: #1c1c1c;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(255, 221, 153, 0.2);
+    }
+
+    .alert {
+        background-color: rgba(255, 107, 107, 0.1);
+        border-left: 4px solid red;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+
+    .button {
+        display: inline-block;
+        background-image: linear-gradient(to right, var(--secondary), #ffe5b9);
+        color: var(--primary);
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .button:hover {
+        background-image: linear-gradient(to right, #f5f1e9, var(--secondary));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255, 221, 153, 0.3);
+    }
+
+    .footer {
+        text-align: center;
+        padding: 20px;
+        background: black;
+        color: var(--text-light);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Initialize First ML Model</h2>
+    <div class="alert">
+        ⚠️ No machine learning models found. You need to create an initial model before you can train it.
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <p>Click the button below to create an initial model:</p>
+        <button type="submit" class="button">➕ Create Initial Model</button>
+        <a href="{% url 'admin:index' %}" class="button" style="background-color: #999;">❌ Cancel</a>
+    </form>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div class="footer">
+    &copy; Academic Analytics | Data Science Project
+</div>
+{% endblock %}

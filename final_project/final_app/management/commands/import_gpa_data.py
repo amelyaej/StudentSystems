@@ -12,7 +12,7 @@ class Command(BaseCommand):
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         csv_path = os.path.join(BASE_DIR, 'data', 'cleaned_gpa_data.csv')
 
-
+ 
         if not os.path.exists(csv_path):
             self.stderr.write(f"❌ CSV file not found at {csv_path}")
             return

@@ -1,0 +1,86 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div id="content-main">
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <input type="checkbox" id="theme-switcher">
+        <label for="theme-switcher">Theme</label>
+    </div>
+
+    <!-- GPA Records Table -->
+    <div class="module">
+        <h2>GPA Records</h2>
+        <div class="scrollable-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Student Name</th>
+                        <th>Semester</th>
+                        <th>Avg Grade</th>
+                        <th>Attendance</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in cl.result_list %}
+                    <tr>
+                        <td>{{ obj.student.stu_id }}</td>
+                        <td>{{ obj.student.name }}</td>
+                        <td>{{ obj.semester }}</td>
+                        <td>{{ obj.avg_grade }}</td>
+                        <td>{{ obj.attendance_percentage }}%</td>
+                        <td class="actions-column">
+                            <a href="{% url 'admin:final_app_gparecord_change' obj.id %}" class="button">✏️ Edit</a>
+                            <a href="{% url 'admin:final_app_gparecord_delete' obj.id %}" class="button" onclick="return confirm('Are you sure you want to delete this record?')">🗑️ Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            ⚠️ No GPA records found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scroll Down Button -->
+    <button class="scroll-down-btn" onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })">
+        <i class="fas fa-arrow-down"></i>
+    </button>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div class="footer">
+    &copy; {% now "Y" %} Academic Analytics | Data Science Project
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    const switcher = document.getElementById('theme-switcher');
+    const root = document.documentElement;
+
+    if (switcher && root) {
+        switcher.addEventListener('change', () => {
+            if (switcher.checked) {
+                root.style.setProperty('--primary', '#ffffff');
+                root.style.setProperty('--secondary', '#3A0519');
+                root.style.setProperty('--text-light', '#3A0519');
+                root.style.setProperty('--accent-glow', '#f5f5f5');
+            } else {
+                root.style.setProperty('--primary', '#3A0519');
+                root.style.setProperty('--secondary', '#ffdd99');
+                root.style.setProperty('--text-light', '#f5f1e9');
+                root.style.setProperty('--accent-glow', 'rgba(255, 221, 153, 0.1)');
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "admin/change_list.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div id="content-main">
+
+  <!-- Student Table -->
+  <div class="module" role="region" aria-labelledby="student-records-heading">
+    <h2 id="student-records-heading">Student Records</h2>
+    <div class="scrollable-table" tabindex="0" aria-live="polite" aria-relevant="all">
+      <table role="grid" aria-describedby="student-records-description">
+        <thead>
+          <tr>
+            <th scope="col" title="Student ID">Student ID <i class="fas fa-sort"></i></th>
+            <th scope="col" title="Name">Name <i class="fas fa-sort"></i></th>
+            <th scope="col" title="Email">Email <i class="fas fa-sort"></i></th>
+            <th scope="col" title="Department">Department <i class="fas fa-sort"></i></th>
+            <th scope="col" title="Gender">Gender <i class="fas fa-sort"></i></th>
+            <th scope="col" title="Date of Birth">Date of Birth <i class="fas fa-sort"></i></th>
+            <th scope="col" title="Action">Action <i class="fas fa-sort"></i></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in cl.result_list %}
+          <tr role="row" onclick="window.location.href='{{ student.pk }}/change/'" style="cursor: pointer;">
+            <td role="gridcell">{{ student.stu_id }}</td>
+            <td role="gridcell">{{ student.name }}</td>
+            <td role="gridcell">
+              <a href="mailto:{{ student.email }}" style="color: var(--secondary); text-decoration: underline;" onclick="event.stopPropagation();">
+                {{ student.email }}
+              </a>
+            </td>
+            <td role="gridcell">{{ student.dept.dept_name }}</td>
+            <td role="gridcell">{{ student.gender }}</td>
+            <td role="gridcell">{{ student.dob|date:"F j, Y" }}</td>
+            <td role="gridcell" class="actions-column">
+              <a href="{{ student.pk }}/delete/" class="button danger" onclick="event.stopPropagation();" aria-label="Delete student {{ student.name }}">
+                Delete
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="empty-state" role="alert" aria-live="assertive">
+              ⚠️ No student records found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Scroll Down Button -->
+  <button class="scroll-down-btn" aria-label="Scroll to bottom of page" onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })">
+    <i class="fas fa-arrow-down"></i>
+  </button>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div class="footer" role="contentinfo">
+  &copy; {% now "Y" %} Academic Analytics | Data Science Project
+</div>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script>
+  const switcher = document.getElementById('theme-switcher');
+  const root = document.documentElement;
+
+  if (switcher && root) {
+    switcher.addEventListener('change', () => {
+      if (switcher.checked) {
+        root.style.setProperty('--primary', '#ffffff');
+        root.style.setProperty('--secondary', '#3A0519');
+        root.style.setProperty('--text-light', '#3A0519');
+        root.style.setProperty('--accent-glow', '#eee');
+      } else {
+        root.style.setProperty('--primary', '#3A0519');
+        root.style.setProperty('--secondary', '#ffdd99');
+        root.style.setProperty('--text-light', '#f5f1e9');
+        root.style.setProperty('--accent-glow', 'rgba(255, 221, 153, 0.1)');
+      }
+    });
+  }
+</script>
+{% endblock %}

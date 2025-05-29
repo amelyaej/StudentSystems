@@ -2,11 +2,19 @@ from django.shortcuts import render
 from .forms import GPAPredictionForm, UploadFileForm
 from .models import GPARecord
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, accuracy_score
 import pandas as pd
 import joblib
 import os
 from django.conf import settings
+<<<<<<< HEAD
 import csv
+=======
+from django.contrib import messages
+from django.shortcuts import redirect, render
+from django.urls import reverse
+>>>>>>> 30d2e8b0ad91e6102afde4410c2ea417d483c4f5
 
 # Global model and metrics cache
 _model = None
@@ -171,6 +179,7 @@ def predict_gpa(request):
         'metrics': metrics,
     })
 
+<<<<<<< HEAD
 def engagement_ratio(request):
     csv_path = os.path.join(settings.BASE_DIR, 'data', 'processed_student_data.csv')
 
@@ -219,3 +228,45 @@ def engagement_ratio(request):
         'filtered_data': filtered_data,
     }
     return render(request, 'engagement_ratio.html', context)
+=======
+
+
+def retrain_model_view(request):
+    metrics = None
+    if request.method == 'POST':
+        try:
+            records = GPARecord.objects.all().values()
+            df = pd.DataFrame(records)
+
+            X = df[['avg_grade', 'attendance_percentage', 'assessment_count', 'avg_score']]
+            y = df['gpa_drop']
+
+            model = RandomForestClassifier()
+            model.fit(X, y)
+
+            models_dir = os.path.join(settings.BASE_DIR, 'final_app', 'models')
+            os.makedirs(models_dir, exist_ok=True)
+            model_path = os.path.join(models_dir, 'gpa_drop_model.pkl')
+            joblib.dump(model, model_path)
+
+            report = classification_report(y, model.predict(X), output_dict=True)
+            accuracy = round(accuracy_score(y, model.predict(X)) * 100, 2)
+
+            metrics = {
+                'model_name': 'Random Forest',
+                'accuracy': accuracy,
+                'precision': round(report['weighted avg']['precision'] * 100, 2),
+                'recall': round(report['weighted avg']['recall'] * 100, 2),
+                'f1_score': round(report['weighted avg']['f1-score'] * 100, 2),
+            }
+
+            messages.success(request, "✅ Model retrained and saved successfully.")
+        except Exception as e:
+            messages.error(request, f"❌ Error during retraining: {str(e)}")
+
+        return redirect(reverse('admin:retrain-model'))
+
+    return render(request, 'admin/retrain.html', {
+        'metrics': metrics
+    })
+>>>>>>> 30d2e8b0ad91e6102afde4410c2ea417d483c4f5
