@@ -22,7 +22,7 @@
         body {
             font-family: 'Montserrat', sans-serif;
             overflow-x: hidden;
-            background-color: #1A1A1A;
+            background-color: #1A1A1A; 
             color: #f5f1e9;
             line-height: 1.6;
             padding-top: 80px;
@@ -382,7 +382,7 @@
             gap: 1.5rem;
         }
         .record-item {
-            background: #2a0411;
+            background: #EAE4D5; 
             border-radius: 10px;
             padding: 1.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -395,7 +395,7 @@
         }
         .record-item h3 {
             margin-top: 0;
-            color: #ffdd99;
+            color: #393E46;
         }
         .stat-item {
             display: flex;
@@ -403,10 +403,11 @@
             margin: 0.5rem 0;
             padding: 0.5rem 0;
             border-bottom: 1px solid #444;
+            color: #393E46;
         }
         .stat-label {
             font-weight: 600;
-            color: #ffdd99;
+            color: #393E46;
         }
         .gpa-drop-yes {
             color: #FF6B6B;
@@ -655,30 +656,30 @@
         {% if predicted_records %}
             <h2>Prediction</h2>
             <div class="prediction-container">
-                <!-- Historical Records moved into prediction container -->
-                <div class="record-grid">
-                    {% for record in predicted_records.prev_records %}
-                        <div class="record-item">
-                            <h3>Semester {{ record.semester_id }}</h3>
-                            <div class="stat-item">
-                                <span class="stat-label">Grade:</span>
-                                <span>{{ record.avg_grade|floatformat:1 }}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">GPA Drop:</span>
-                                <span class="{% if record.gpa_drop %}gpa-drop-yes{% else %}gpa-drop-no{% endif %}">
-                                    {{ record.gpa_drop|yesno:"Yes,No" }}
-                                </span>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
                 <!-- AI Prediction Card -->
                 {% if prediction %}
                     <div class="prediction-card feature-card">
                         <div class="prediction-header">
                             <i class="fas fa-brain prediction-icon"></i>
                             <h2 class="prediction-title">AI Performance Prediction</h2>
+                        </div>
+                        <!-- Historical Records moved here -->
+                        <div class="record-grid">
+                            {% for record in predicted_records.prev_records %}
+                                <div class="record-item">
+                                    <h3>Semester {{ record.semester_id }}</h3>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Grade:</span>
+                                        <span>{{ record.avg_grade|floatformat:1 }}</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">GPA Drop:</span>
+                                        <span class="{% if record.gpa_drop %}gpa-drop-yes{% else %}gpa-drop-no{% endif %}">
+                                            {{ record.gpa_drop|yesno:"Yes,No" }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
                         {% if prediction.prediction == "No previous GPA records found for this student." or prediction.prediction == "This is the student's first semester — no prior GPA to compare or track." %}
                             <div class="alert alert-info">
@@ -713,14 +714,13 @@
                                     <strong>Good News:</strong> The model predicts stable academic performance with a GPA increase of +{{ prediction.changes.grade_change|floatformat:1 }} compared to the previous semester.
                                 </div>
                             {% endif %}
-
-                            {% endif %}
+                        {% endif %}
+                        <!-- Chart moved into AI Prediction Card -->
+                        <div class="chart-container feature-card">
+                            <canvas id="trendChart"></canvas>
+                        </div>
                     </div>
                 {% endif %}
-                <!-- Chart -->
-                <div class="chart-container feature-card">
-                    <canvas id="trendChart"></canvas>
-                </div>
             </div>
         {% endif %}
     </main>
