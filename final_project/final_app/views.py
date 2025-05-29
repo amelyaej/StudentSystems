@@ -8,13 +8,10 @@ import pandas as pd
 import joblib
 import os
 from django.conf import settings
-<<<<<<< HEAD
 import csv
-=======
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse
->>>>>>> 30d2e8b0ad91e6102afde4410c2ea417d483c4f5
 
 # Global model and metrics cache
 _model = None
@@ -179,7 +176,6 @@ def predict_gpa(request):
         'metrics': metrics,
     })
 
-<<<<<<< HEAD
 def engagement_ratio(request):
     csv_path = os.path.join(settings.BASE_DIR, 'data', 'processed_student_data.csv')
 
@@ -228,7 +224,6 @@ def engagement_ratio(request):
         'filtered_data': filtered_data,
     }
     return render(request, 'engagement_ratio.html', context)
-=======
 
 
 def retrain_model_view(request):
@@ -269,4 +264,3 @@ def retrain_model_view(request):
     return render(request, 'admin/retrain.html', {
         'metrics': metrics
     })
->>>>>>> 30d2e8b0ad91e6102afde4410c2ea417d483c4f5

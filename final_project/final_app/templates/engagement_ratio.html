@@ -4,6 +4,103 @@
 <html>
 <head>
   <style>
+     /* === HEADER STYLES === */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: #1A1A1A;
+            padding: 1rem 3rem 1rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .header-logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.5rem;
+            color: #800020;
+            margin: 0;
+            position: relative;
+        }
+        nav {
+            display: flex;
+            gap: 2rem;
+            margin-right: 1.5rem;
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+            padding: 0.5rem 0;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #FF0000;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #FF0000;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .mobile-menu-button {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        /* === MOBILE MENU STYLES === */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .mobile-menu.active {
+            display: flex;
+        }
+        .mobile-menu nav {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            margin-right: 0;
+        }
+        .mobile-menu .nav-link {
+            font-size: 1.5rem;
+        }
+        .mobile-menu-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
     body {
       background-color: #121212;
       color: #f5f5f5;
@@ -50,6 +147,61 @@
     tr:nth-child(even) {
       background-color: #1c1c1c;
     }
+     /* === FOOTER STYLES === */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #1A1A1A;
+            color: #ffdd99;
+            margin-top: 3rem;
+        }
+        /* === RESPONSIVE STYLES === */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+            header {
+                padding: 0.8rem 1.5rem 0.8rem 1rem;
+            }
+            .header-logo {
+                font-size: 1.2rem;
+            }
+            nav {
+                display: none;
+            }
+            .mobile-menu-button {
+                display: block;
+            }
+            .mobile-menu {
+                display: none;
+            }
+            .mobile-menu.active {
+                display: flex;
+            }
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            .student-select-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+            .record-grid {
+                grid-template-columns: 1fr;
+            }
+            .prediction-container {
+                flex-direction: column;
+            }
+        }
 
     /* Color coding classes */
     .good { color: #00ff00; font-weight: bold; }
@@ -58,8 +210,28 @@
   </style>
 </head>
 <body>
+   <!-- Header Section -->
+    <header>
+        <h1 class="header-logo">Dropout Risk</h1>
+        <nav>
+            <a href="/" class="nav-link">Home</a>
+            <a href="/admin/" class="nav-link">Admin</a>
+        </nav>
+        <button class="mobile-menu-button" id="mobileMenuButton">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-menu-close" id="mobileMenuClose">
+            <i class="fas fa-times"></i>
+        </button>
+        <nav>
+            <a href="/" class="nav-link">Home</a>
+            <a href="/admin/" class="nav-link">Admin</a>
+        </nav>
+    </div>
 
-<h1>ENGAGEMENT RATIO</h1>
 
 <form method="post">
   {% csrf_token %}
@@ -103,6 +275,9 @@
 {% elif selected_students %}
   <p>No data found for the selected student(s).</p>
 {% endif %}
-
+<!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Academic Analytics | Data Science Project</p>
+    </footer>
 </body>
 </html>
