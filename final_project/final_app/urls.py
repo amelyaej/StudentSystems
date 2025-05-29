@@ -7,7 +7,7 @@ from django.contrib import admin
 
 urlpatterns = [
     path('', home, name='home'),
-    path('predict-attendance/', attendance_predict_view, name='attendance_predict'),
+    path("predict-career/", views.predict_career, name="predict_career"),
     path('admin/', admin.site.urls),
     path('retrain-model/<int:model_id>/', retrain_model_view, name='retrain-model'),
     path('engagement-ratio/', engagement_ratio, name='engagement_ratio'),

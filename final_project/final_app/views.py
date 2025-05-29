@@ -16,6 +16,90 @@ from .forms import CourseRecommendationForm
 from django.db import connection
 import pickle
 
+def predict_career(request):
+
+    prediction = None
+    suggestion = None
+    dream_career = None
+    selected_student = None
+    scores = None
+    student_name = None
+    suggestion_result = None
+
+    # Load your dataset
+    dataset_path = os.path.join("data", "student_career_dataset.csv")
+    df = pd.read_csv(dataset_path)
+    df.fillna(0, inplace=True)
+
+    # Always load student list for dropdown
+    students = df[["stu_id", "name"]].drop_duplicates().to_dict("records")
+
+    if request.method == "POST":
+        stu_id = request.POST.get("stu_id")
+        selected_student = stu_id
+        dream_career = request.POST.get("dream_career")
+
+        student_row = df[df["stu_id"].astype(str) == str(stu_id)]
+
+        if not student_row.empty:
+            student_name = student_row.iloc[0]["name"]
+            avg_db = student_row.iloc[0]["avg_db"]
+            avg_ai = student_row.iloc[0]["avg_ai"]
+            avg_web = student_row.iloc[0]["avg_web"]
+            avg_sys = student_row.iloc[0]["avg_sys"]
+            avg_cs = student_row.iloc[0]["avg_cs"]
+
+            scores = {
+                "avg_db": avg_db,
+                "avg_ai": avg_ai,
+                "avg_web": avg_web,
+                "avg_sys": avg_sys,
+                "avg_cs": avg_cs
+            }
+
+            domain_map = {
+                "DB": avg_db,
+                "AI": avg_ai,
+                "WEB": avg_web,
+                "SYS": avg_sys,
+                "CS": avg_cs
+            }
+
+            if not dream_career:
+                # Predict career using ML model
+                model_path = os.path.join("final_app", "models", "career_predictor_model.pkl")
+                encoder_path = os.path.join("final_app", "models", "label_encoder.pkl")
+
+                model = joblib.load(model_path)
+                le = joblib.load(encoder_path)
+
+                input_data = np.array([[avg_db, avg_ai, avg_web, avg_sys, avg_cs]])
+                prediction_code = model.predict(input_data)[0]
+                prediction = le.inverse_transform([prediction_code])[0]
+            else:
+                # Personalized suggestion based on selected dream career
+                career_score = domain_map.get(dream_career)
+                threshold = 75
+
+                if career_score < threshold:
+                    suggestion = dream_career
+                    suggestion_result = f"For the next semester, you need to catch up on {dream_career} grade. Get consultation with your lecturer!"
+                else:
+                    suggestion = None
+                    suggestion_result = f"You're doing great in your dream career field ({dream_career})! Keep it up!"
+                prediction = None
+
+    return render(request, "career_predict.html", {
+        "students": students,
+        "prediction": prediction,
+        "scores": scores,
+        "selected_student": selected_student,
+        "student_name": student_name,
+        "suggestion": suggestion,
+        "dream_career": dream_career,
+        "suggestion_result": suggestion_result,
+    })
+    
 # Global model and metrics cache
 _model = None
 _model_metrics = None

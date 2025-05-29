@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Field Predictor - Group 7</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: "#800020", secondary: "#1A1A1A", maroon: "#4B0015" },
+                    borderRadius: { button: "8px" },
+                },
+            },
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        body { font-family: 'Montserrat', sans-serif; background-color: #4B0015; color: #fff; }
+    </style>
+</head>
+<body>
+<header class="fixed top-0 left-0 right-0 bg-secondary bg-opacity-95 backdrop-blur-sm z-50 shadow-md">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="#" class="text-primary font-['Pacifico'] text-2xl">Career Predictor</a>
+        <nav class="hidden md:flex space-x-8">
+            <a href="#predictor" class="text-white hover:text-primary transition-colors duration-300">Career Predictor</a>
+            <a href="{% url 'home' %}" class="text-white hover:text-primary transition-colors duration-300">Home</a>
+        </nav>
+    </div>
+</header>
+
+<section class="parallax-bg pt-32 pb-20 relative">
+    <div class="absolute inset-0 bg-black bg-opacity-70"></div>
+    <div class="container mx-auto px-6 py-16 relative z-10 text-center">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Career Field Predictor</h1>
+        <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">Personalized ML-powered recommendation system based on your academic strengths.</p>
+    </div>
+</section>
+
+<main class="min-h-screen py-16">
+    <div class="container mx-auto px-6 max-w-5xl" id="predictor">
+
+        <!-- Prediction Form -->
+        <div class="bg-secondary bg-opacity-80 backdrop-blur-sm rounded-lg border-l-4 border-primary shadow-lg p-8 mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="ri-brain-line ri-lg text-primary mr-3"></i> Predict Your Career Field
+            </h2>
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <label for="student" class="block text-gray-300">Select Student</label>
+                <select name="stu_id" id="student" class="w-full bg-gray-800 border border-gray-700 text-white rounded py-3 px-4 pr-8 focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    <option value="" disabled selected>Choose a student</option>
+                    {% for student in students %}
+                        <option value="{{ student.stu_id }}" {% if selected_student == student.stu_id|stringformat:"s" %}selected{% endif %}>{{ student.name }} (ID: {{ student.stu_id }})</option>
+                    {% endfor %}
+                </select>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button type="submit" class="bg-primary hover:bg-opacity-80 text-white py-3 px-6 rounded-button transition-all duration-300 flex items-center justify-center">
+                        <i class="ri-bar-chart-line mr-2"></i> Predict
+                    </button>
+                    <button type="button" onclick="window.print()" class="border border-primary text-primary hover:bg-primary hover:text-white py-3 px-6 rounded-button transition-all duration-300 flex items-center justify-center">
+                        <i class="ri-file-download-line mr-2"></i> Download PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {% if prediction or suggestion_result %}
+        <div class="bg-secondary bg-opacity-80 backdrop-blur-sm rounded-lg border-l-4 border-primary shadow-lg p-8 mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="ri-file-list-3-line ri-lg text-primary mr-3"></i> Prediction Result
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                <div>
+                    <h3 class="text-lg font-medium text-gray-300 mb-2">Student Information</h3>
+                    <p><span class="text-gray-400">Name:</span> {{ student_name }}</p>
+                    <p><span class="text-gray-400">Student ID:</span> {{ selected_student }}</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-300 mb-2">Domain Scores</h3>
+                    <ul>
+                        <li>DB: {{ scores.avg_db }}</li>
+                        <li>AI: {{ scores.avg_ai }}</li>
+                        <li>WEB: {{ scores.avg_web }}</li>
+                        <li>SYS: {{ scores.avg_sys }}</li>
+                        <li>CS: {{ scores.avg_cs }}</li>
+                    </ul>
+                </div>
+            </div>
+            {% if prediction %}
+            <h3 class="text-lg font-medium text-gray-300 mb-2">Predicted Career</h3>
+            <p class="text-xl font-bold text-primary">{{ prediction }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="bg-secondary bg-opacity-80 backdrop-blur-sm rounded-lg border-l-4 border-primary shadow-lg p-8 mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="ri-user-star-line ri-lg text-primary mr-3"></i> Choose Your Dream Career
+            </h2>
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="stu_id" value="{{ selected_student }}">
+                <label for="dream-career" class="block text-gray-300">Select Your Dream Career</label>
+                <select name="dream_career" id="dream-career" class="w-full bg-gray-800 border border-gray-700 text-white rounded py-3 px-4 pr-8 focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    <option value="" disabled selected>Choose a career field</option>
+                    <option value="DB" {% if dream_career == "DB" %}selected{% endif %}>Database Engineer</option>
+                    <option value="AI" {% if dream_career == "AI" %}selected{% endif %}>AI Engineer</option>
+                    <option value="WEB" {% if dream_career == "WEB" %}selected{% endif %}>Web Developer</option>
+                    <option value="SYS" {% if dream_career == "SYS" %}selected{% endif %}>System Engineer</option>
+                    <option value="CS" {% if dream_career == "CS" %}selected{% endif %}>Cybersecurity Analyst</option>
+                </select>
+                <button type="submit" class="bg-primary hover:bg-opacity-80 text-white py-3 px-6 rounded-button transition-all duration-300 flex items-center justify-center">
+                    <i class="ri-lightbulb-line mr-2"></i> Get Suggestions
+                </button>
+            </form>
+        </div>
+
+        {% if dream_career %}
+        <div class="bg-secondary bg-opacity-80 backdrop-blur-sm rounded-lg border-l-4 border-primary shadow-lg p-8">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="ri-road-map-line ri-lg text-primary mr-3"></i> Suggestion to Reach {{ dream_career }}
+            </h2>
+            {% if suggestion %}
+            <div class="bg-gray-800 border-l-4 border-yellow-500 p-4 mb-6">
+                <p>You should improve your score in: <span class="text-yellow-500 font-medium">{{ suggestion }}</span></p>
+                <p class="text-gray-400 mt-1">For the next semester, you need to catch up on {{ suggestion }} grade. Get consultation with your lecturer!</p>
+            </div>
+            {% else %}
+            <div class="bg-gray-800 border-l-4 border-green-500 p-4 mb-6">
+                <p class="font-medium">You're doing great in your dream career field! Keep it up!</p>
+                <p class="text-gray-400 mt-1">Your current academic performance aligns well with your career goals.</p>
+            </div>
+            {% endif %}
+            <h3 class="text-lg font-medium text-gray-300 mb-4">Start Learning Here:</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="https://www.coursera.org" target="_blank" class="flex items-center p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-300">
+                    <i class="ri-graduation-cap-line ri-lg mr-3 text-blue-400"></i> Coursera
+                </a>
+                <a href="https://www.udemy.com" target="_blank" class="flex items-center p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-300">
+                    <i class="ri-book-open-line ri-lg mr-3 text-blue-400"></i> Udemy
+                </a>
+                <a href="https://www.w3schools.com" target="_blank" class="flex items-center p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-300">
+                    <i class="ri-code-line ri-lg mr-3 text-blue-400"></i> W3Schools
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</main>
+
+<footer class="bg-secondary py-10">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-6 md:mb-0">
+                <h1 class="text-2xl font-['Pacifico'] text-primary">Group 7</h1>
+                <p class="text-gray-400 mt-2">Data Science Project © 2025</p>
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ri-github-fill ri-lg"></i></a>
+                <a href="https://www.linkedin.com/in/amelyaenjelita/" class="text-gray-400 hover:text-primary transition-colors"><i class="ri-linkedin-box-fill ri-lg"></i></a>
+                <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="ri-twitter-fill ri-lg"></i></a>
+                <a href="https://www.instagram.com/amelyajlta/" class="text-gray-400 hover:text-primary transition-colors"><i class="ri-instagram-fill ri-lg"></i></a>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+            <p>Designed and developed by Group 7 Data Science Team. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
