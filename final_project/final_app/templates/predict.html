@@ -6,229 +6,325 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Performance Dashboard</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display :wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css ">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- html2pdf.js for client-side PDF export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
     <style>
-        :root {
-            --primary: #3A0519;
-            --secondary: #ffdd99;
-            --text-light: #f5f1e9;
-            --text-dark: #2a0411;
-            --danger: #ff6b6b;
-            --success: #6bff6b;
-            --warning: #ffa500;
-            --info: #4ecdc4;
+        /* === GLOBAL STYLES === */
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        html {
+            scroll-behavior: smooth;
         }
-        * {
-            box-sizing: border-box;
+        body {
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            background-color: #1A1A1A;
+            color: #f5f1e9;
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+        /* === HEADER STYLES === */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: #1A1A1A;
+            padding: 1rem 3rem 1rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .header-logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.5rem;
+            color: #800020;
             margin: 0;
-            padding: 0;
+            position: relative;
+        }
+        nav {
+            display: flex;
+            gap: 2rem;
+            margin-right: 1.5rem;
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+            padding: 0.5rem 0;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #FF0000;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #FF0000;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .mobile-menu-button {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        /* === MOBILE MENU STYLES === */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .mobile-menu.active {
+            display: flex;
+        }
+        .mobile-menu nav {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            margin-right: 0;
+        }
+        .mobile-menu .nav-link {
+            font-size: 1.5rem;
+        }
+        .mobile-menu-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        /* === MAIN CONTENT STYLES === */
+        .parallax-section {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("{% static 'final_app/images/image1.jpeg' %}");
+            background-size: cover;
+            background-position: center;
+            transform: translateZ(-1px) scale(2);
+            z-index: -1;
+            filter: brightness(0.7);
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+            padding: 2rem;
         }
         .hero-title {
             font-size: 3.5rem;
             font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--secondary);
-            animation: fadeInDown 1s ease-in-out;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
         .hero-subtitle {
             font-size: 1.25rem;
             max-width: 700px;
-            margin-top: 1rem;
-            color: var(--text-light);
-            font-weight: 400;
-            animation: fadeInUp 1.2s ease-in-out;
-        }
-        @keyframes fadeInDown {
-            0% {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        @keyframes fadeInUp {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        body {
-            font-family: 'Playfair Display', serif;
-            background-color: var(--primary);
-            color: var(--text-light);
-            line-height: 1.6;
+            margin: 0 auto 2rem;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
-        nav {
-            background-color: black;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: flex-end;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-            position: fixed;
-            width: 100%;
-            z-index: 1000;
-        }
-        nav a {
-            color: var(--text-light);
-            text-decoration: none;
-            margin-left: 1.5rem;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-        nav a:hover {
-            color: var(--secondary);
-        }
-        header {
-            background-image: url("{% static 'final_app/images/image1.jpeg' %}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--text-light);
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
-        }
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            transition: color 0.3s ease;
-        }
-        header h1:hover {
-            color: var(--secondary);
-        }
-        .card {
-            background: rgba(42, 4, 17, 0.7);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 0 10px rgba(255, 221, 153, 0.2);
-        }
-        .highlight-card {
-            border-left: 4px solid var(--secondary);
-            background: rgba(255, 221, 153, 0.1);
-        }
-
-        /* Enhanced Prediction Card Styles */
-        .prediction-card {
-            background: linear-gradient(135deg, rgba(255, 221, 153, 0.15), rgba(42, 4, 17, 0.85));
-            border: 2px solid var(--secondary);
-            border-radius: 12px;
+        /* === FORM STYLES === */
+        form {
+            background: #2a0411;
+            border-radius: 15px;
             padding: 2rem;
-            margin: 2rem 0;
-            box-shadow: 0 8px 25px rgba(255, 221, 153, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 3rem auto;
+            max-width: 600px;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            font: 13px;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #ffdd99;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+            background-color: #f5f1e9;
+            color: #1A1A1A;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #FF0000;
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        button {
+            background-color: #ffdd99;
+            color: #1A1A1A;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        button:hover {
+            background-color: #f5f1e9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        /* === PREDICTION CARD STYLES === */
+        .prediction-card {
+            background: #2a0411;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #FF0000;
             position: relative;
             overflow: hidden;
         }
+        /* Shimmer Overlay */
         .prediction-card::before {
-            content: '';
+            content: "";
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
-            height: 200%;
+            height: 50px;
             background: linear-gradient(
-                45deg,
-                transparent,
-                rgba(255, 221, 153, 0.1),
-                transparent
+                transparent 25%,
+                rgba(255, 255, 255, 0.2),
+                transparent 75%
             );
-            transform: rotate(45deg);
-            animation: shimmer 3s infinite;
+            animation: shimmer 2s infinite linear;
+            pointer-events: none;
+            z-index: 2;
         }
         @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
         }
         .prediction-header {
             display: flex;
             align-items: center;
             margin-bottom: 1.5rem;
             position: relative;
-            z-index: 1;
+            z-index: 3;
         }
         .prediction-icon {
             font-size: 2rem;
+            color: #FF0000;
             margin-right: 1rem;
-            color: var(--secondary);
         }
         .prediction-title {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--secondary);
+            color: #ffdd99;
             margin: 0;
         }
         .prediction-result {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.3);
+            background: #2a0411;
             padding: 1.5rem;
-            border-radius: 8px;
+            border-radius: 10px;
             margin: 1rem 0;
             position: relative;
-            z-index: 1;
+            z-index: 3;
         }
         .prediction-value {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             padding: 0.5rem 1rem;
             border-radius: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: white;
         }
         .prediction-yes {
-            background-color: var(--danger);
-            color: white;
-            box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+            background-color: #FF6B6B;
         }
         .prediction-no {
-            background-color: var(--success);
-            color: white;
-            box-shadow: 0 0 15px rgba(107, 255, 107, 0.4);
+            background-color: #4CAF50;
         }
         .confidence-meter {
-            display: flex;
-            align-items: center;
-            margin: 1rem 0;
-            position: relative;
-            z-index: 1;
+            margin: 1.5rem 0;
         }
         .confidence-bar {
-            flex: 1;
             height: 20px;
-            background: rgba(255, 255, 255, 0.2);
+            background: #1A1A1A;
             border-radius: 10px;
             overflow: hidden;
-            margin-left: 1rem;
+            margin-top: 0.5rem;
             position: relative;
         }
         .confidence-fill {
             height: 100%;
             border-radius: 10px;
-            transition: width 2s ease-in-out;
-            background: linear-gradient(90deg, var(--success), var(--warning), var(--danger));
+            background: linear-gradient(90deg, #4CAF50, #FFC107, #FF6B6B);
+            transition: width 1s ease;
         }
         .confidence-text {
             position: absolute;
@@ -236,379 +332,317 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-weight: bold;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            color: #f5f1e9;
             font-size: 0.9rem;
         }
-        .changes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-        .change-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-        .change-item:hover {
-            transform: translateY(-3px);
-        }
-        .change-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-        .change-positive {
-            color: var(--success);
-        }
-        .change-negative {
-            color: var(--danger);
-        }
-        .change-neutral {
-            color: var(--secondary);
-        }
+        /* === ALERT STYLES === */
         .alert {
             padding: 1rem;
             border-radius: 8px;
             margin: 1rem 0;
-            font-weight: bold;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         .alert-success {
             background-color: rgba(107, 255, 107, 0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
+            border-left: 4px solid #6bff6b;
+            color: #6bff6b;
         }
         .alert-danger {
             background-color: rgba(255, 107, 107, 0.2);
-            border: 1px solid var(--danger);
-            color: var(--danger);
+            border-left: 4px solid #ff6b6b;
+            color: #ff6b6b;
         }
         .alert-info {
-            background-color: rgba(78, 205, 196, 0.2);
-            border: 1px solid var(--info);
-            color: var(--info);
+            background-color: rgba(33, 150, 243, 0.2);
+            border-left: 4px solid #2196F3;
+            color: #2196F3;
         }
-        .metrics-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1.5rem;
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-left: 4px solid #FFC107;
+            color: #FFC107;
         }
-        .metrics-table th, .metrics-table td {
-            padding: 0.75rem;
-            border-bottom: 1px solid rgba(255, 221, 153, 0.2);
-            text-align: center;
+        /* === CHART STYLES === */
+        .chart-container {
+            background: #2a0411;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        .metrics-table th {
-            background-color: rgba(255, 221, 153, 0.1);
+        canvas {
+            height: 300px;
         }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.8rem;
-            margin: 3rem auto;
-            width: 520px;
-            padding: 3rem;
-            background-color: rgba(58, 5, 25, 0.95);
-            border-radius: 16px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4),
-                        inset 0 0 0 4px #ffdd99,
-                        inset 0 0 0 8px rgba(58, 5, 25, 0.8),
-                        inset 0 0 0 12px #ffdd99;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #f5f1e9;
-            position: relative;
-            overflow: hidden;
-            border: none;
+        /* === HISTORY GRID STYLES === */
+        .record-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
         }
-        form::after {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            right: -4px;
-            bottom: -4px;
-            border-radius: 20px;
-            border: 4px solid transparent;
-            background: linear-gradient(45deg, 
-                        #ffdd99, 
-                        rgba(255, 221, 153, 0.7), 
-                        #ffdd99) border-box;
-            -webkit-mask: linear-gradient(#fff 0 0) padding-box, 
-                        linear-gradient(#fff 0 0);
-            -webkit-mask-composite: destination-out;
-            mask-composite: exclude;
-            pointer-events: none;
-            animation: borderGlow 3s linear infinite;
+        .record-item {
+            background: #2a0411;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            border-left: 4px solid #FF0000;
         }
-        @keyframes borderGlow {
-            0% { opacity: 0.8; }
-            50% { opacity: 1; }
-            100% { opacity: 0.8; }
+        .record-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
-        form::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                linear-gradient(135deg, transparent 90%, #ffdd99 90%) 0 0,
-                linear-gradient(45deg, transparent 90%, #ffdd99 90%) 0 0,
-                linear-gradient(-135deg, transparent 90%, #ffdd99 90%) 100% 0,
-                linear-gradient(-45deg, transparent 90%, #ffdd99 90%) 100% 0;
-            background-size: 30px 30px;
-            background-repeat: no-repeat;
-            z-index: -1;
-            opacity: 0.5;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-        label {
-            font-weight: 700;
+        .record-item h3 {
+            margin-top: 0;
             color: #ffdd99;
-            font-size: 1.1rem;
-            margin-bottom: 0.3rem;
-            letter-spacing: 0.8px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-        }
-        input, select {
-            width: 100%;
-            padding: 1rem 1.4rem;
-            border-radius: 10px;
-            border: 2px solid rgba(255, 221, 153, 0.4);
-            background-color: rgba(255, 255, 255, 0.95);
-            color: #3A0519;
-            font-family: inherit;
-            font-size: 1.1rem;
-            transition: all 0.4s ease;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #ffdd99;
-            box-shadow: 0 0 0 4px rgba(255, 221, 153, 0.3);
-            background-color: white;
-            transform: scale(1.01);
-        }
-        .form-actions {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        button {
-            background-color: #ffdd99;
-            color: #3A0519;
-            padding: 1rem 2.2rem;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            font-size: 1.1rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            min-width: 180px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        button::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to bottom right,
-                rgba(255, 255, 255, 0.3),
-                rgba(255, 255, 255, 0)
-            );
-            transform: rotate(30deg);
-            transition: all 0.6s ease;
-        }
-        button:hover {
-            background-color: #f5f1e9;
-            transform: translateY(-4px) scale(1.03);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-        button:hover::before {
-            transform: rotate(30deg) translate(20%, 20%);
-        }
-        .print-button {
-            background-color: rgba(255, 221, 153, 0.9);
-            border: 2px solid #ffdd99;
-        }
-        .print-button:hover {
-            background-color: #f5f1e9;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        form {
-            animation: fadeIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         .stat-item {
             display: flex;
             justify-content: space-between;
             margin: 0.5rem 0;
             padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255, 221, 153, 0.2);
+            border-bottom: 1px solid #444;
         }
         .stat-label {
-            color: var(--secondary);
-            font-weight: bold;
+            font-weight: 600;
+            color: #ffdd99;
         }
-        .chart-row {
+        .gpa-drop-yes {
+            color: #FF6B6B;
+            font-weight: 600;
+        }
+        .gpa-drop-no {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+        /* === SELECT CONTAINER STYLES === */
+        .student-select-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            margin: 2rem 0;
+            gap: 1rem;
+            align-items: center;
         }
-        .chart-container {
-            flex: 1;
-            min-width: 300px;
-            height: 300px;
-            background: rgba(42, 4, 17, 0.7);
+        .semester-select-container {
+            width: 100%;
+        }
+        /* === COUNT SELECTOR STYLES === */
+        .count-selector {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #444;
             border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 0 10px rgba(255, 221, 153, 0.2);
+            font-family: 'Montserrat', sans-serif;
+            background-color: #2a0411;
+            color: #ffdd99;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffdd99'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1.2rem;
         }
+        .count-selector:hover {
+            border-color: #FF0000;
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
+        }
+        .count-selector:focus {
+            outline: none;
+            border-color: #FF0000;
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.3);
+        }
+        #id_student, #id_semester_id, .count-selector {
+            height: 44px;
+            box-sizing: border-box;
+        }
+        /* === PREDICTION CONTAINER STYLES === */
+        .prediction-container {
+            position: relative;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            background-color: #1E1E1E;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(255, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 2rem 0;
+            z-index: 1;
+        }
+        .prediction-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 221, 153, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .prediction-container > * {
+            position: relative;
+            z-index: 1;
+            flex: 1 1 45%;
+            min-width: 300px;
+        }
+        /* === FOOTER STYLES === */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #1A1A1A;
+            color: #ffdd99;
+            margin-top: 3rem;
+        }
+        /* === RESPONSIVE STYLES === */
         @media (max-width: 768px) {
-            .chart-row {
-                flex-direction: column;
+            body {
+                padding-top: 70px;
             }
-            .chart-container {
-                min-width: 100%;
+            header {
+                padding: 0.8rem 1.5rem 0.8rem 1rem;
             }
-            .form-actions {
+            .header-logo {
+                font-size: 1.2rem;
+            }
+            nav {
+                display: none;
+            }
+            .mobile-menu-button {
+                display: block;
+            }
+            .mobile-menu {
+                display: none;
+            }
+            .mobile-menu.active {
+                display: flex;
+            }
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            .student-select-container {
                 flex-direction: column;
                 align-items: stretch;
             }
-            .changes-grid {
+            .form-actions {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+            .record-grid {
                 grid-template-columns: 1fr;
             }
+            .prediction-container {
+                flex-direction: column;
+            }
         }
-        .gpa-drop-yes {
-            color: var(--danger);
-            font-weight: bold;
-        }
-        .gpa-drop-no {
-            color: var(--success);
-            font-weight: bold;
-        }
-        .record-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-        .record-item {
-            background: rgba(58, 5, 25, 0.7);
-            padding: 1rem;
-            border-radius: 8px;
-            border-left: 3px solid var(--secondary);
-            transition: transform 0.3s ease;
-        }
-        .record-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Print Styles */
+        /* === PRINT STYLES === */
         @media print {
-            nav,
-            .print-button {
+            header, footer, button {
                 display: none !important;
             }
             body {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                background-color: var(--primary) !important;
-                color: var(--text-light) !important;
+                background-color: white !important;
+                color: black !important;
+                padding-top: 0 !important;
             }
-            header {
-                background-image: url("{% static 'final_app/images/image1.jpeg' %}") !important;
-                background-size: cover !important;
-                background-position: center !important;
-                color: var(--text-light) !important;
-                text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7) !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+            .parallax-bg {
+                filter: brightness(0.5);
             }
-            .card,
-            .highlight-card,
-            .chart-container,
-            .record-item,
-            .prediction-card {
-                background: rgba(42, 4, 17, 0.7) !important;
-                box-shadow: 0 0 10px rgba(255, 221, 153, 0.2) !important;
-                color: var(--text-light) !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+            .content {
+                color: black !important;
             }
-            .stat-label {
-                color: var(--secondary) !important;
-            }
-            canvas {
-                display: block !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+            .feature-card, .prediction-card, .chart-container, .record-item {
+                background: white !important;
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                page-break-inside: avoid;
             }
             .container {
-                width: 100% !important;
                 padding: 0 !important;
-                margin: 0 !important;
-            }
-            .chart-row,
-            .record-grid,
-            .card {
-                page-break-inside: avoid;
             }
         }
     </style>
 </head>
 <body>
-    <nav>
-        <a href="/">Home</a>
-        <a href="/predict/">Predict GPA</a>
-        <a href="/admin/">Admin</a>
-    </nav>
+    <!-- Header Section -->
     <header>
-        <h1 class="hero-title">Student Performance Dashboard</h1>
-        <p class="hero-subtitle">Empowering education with data-driven insights. Monitor, analyze, and elevate student success intelligently.</p>
+        <h1 class="header-logo">GPA Tracker Dashboard</h1>
+        <nav>
+            <a href="/" class="nav-link">Home</a>
+            <a href="/admin/" class="nav-link">Admin</a>
+        </nav>
+        <button class="mobile-menu-button" id="mobileMenuButton">
+            <i class="fas fa-bars"></i>
+        </button>
     </header>
-    <main class="container" id="dashboard-content">
-        <form method="post">
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-menu-close" id="mobileMenuClose">
+            <i class="fas fa-times"></i>
+        </button>
+        <nav>
+            <a href="/" class="nav-link">Home</a>
+            <a href="/admin/" class="nav-link">Admin</a>
+        </nav>
+    </div>
+    <!-- Hero Section -->
+    <section class="parallax-section">
+        <div class="parallax-bg"></div>
+        <div class="content">
+            <h1 class="hero-title">GPA Tracker Dashboard</h1>
+            <p class="hero-subtitle">Empowering education with data-driven insights. Monitor, analyze, and elevate student success intelligently.</p>
+        </div>
+    </section>
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Prediction Form -->
+        <form method="post" class="feature-card">
             {% csrf_token %}
             <div class="form-group">
                 <label for="id_student">Select Student:</label>
-                {{ form.student }}
+                <div class="student-select-container">
+                    {{ form.student }}
+                    <select id="studentCountSelector" class="count-selector">
+                        <option value="1-20">Show 1-20</option>
+                        <option value="21-40">Show 21-40</option>
+                        <option value="41-60">Show 41-60</option>
+                        <option value="61-80">Show 61-80</option>
+                        <option value="81-100">Show 81-100</option>
+                        <option value="101-120">Show 101-120</option>
+                        <option value="121-140">Show 121-140</option>
+                        <option value="141-160">Show 141-160</option>
+                        <option value="161-180">Show 161-180</option>
+                        <option value="181-200">Show 181-200</option>
+                        <option value="all" selected>Show All (1-200)</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group">
                 <label for="id_semester_id">Predict for Semester:</label>
-                {{ form.semester_id }}
+                <div class="semester-select-container">
+                    {{ form.semester_id }}
+                </div>
             </div>
             <div class="form-actions">
-                <button type="submit">Generate Report</button>
+                <button type="submit">
+                    <i class="fas fa-chart-line"></i> Generate Report
+                </button>
                 <button type="button" onclick="window.print()" class="print-button">
                     <i class="fas fa-file-pdf"></i> Save as PDF
                 </button>
             </div>
         </form>
-
+        <!-- Success/Error Messages -->
         {% if success %}
-            <div id="successMessage" class="alert alert-success">
+            <div class="alert alert-success">
                 <i class="fas fa-check-circle"></i> Report generated successfully!
             </div>
         {% endif %}
@@ -617,141 +651,222 @@
                 <i class="fas fa-exclamation-circle"></i> {{ error }}
             </div>
         {% endif %}
-
+        <!-- Results Section -->
         {% if predicted_records %}
-            <h2>Student Performance Overview</h2>
-        {% else %}
-            <h2>No Data Available</h2>
-        {% endif %}
-
-        {% if predicted_records %}
-            <!-- Enhanced Prediction Results Section -->
-            {% if prediction %}
-                <div class="prediction-card">
-                    <div class="prediction-header">
-                        <i class="fas fa-brain prediction-icon"></i>
-                        <h2 class="prediction-title">AI Performance Prediction</h2>
-                    </div>
-                    {% if prediction.prediction == "No previous GPA records found for this student." or prediction.prediction == "This is the student's first semester — no prior GPA to compare or track." %}
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> {{ prediction.prediction }}
-                        </div>
-                    {% else %}
-                        <div class="prediction-result">
-                            <span class="stat-label">Predicted GPA Drop:</span>
-                            <div class="prediction-value {% if prediction.prediction == 'Yes' %}prediction-yes{% else %}prediction-no{% endif %}">
-                                {{ prediction.prediction }}
+            <h2>Prediction</h2>
+            <div class="prediction-container">
+                <!-- Historical Records moved into prediction container -->
+                <div class="record-grid">
+                    {% for record in predicted_records.prev_records %}
+                        <div class="record-item">
+                            <h3>Semester {{ record.semester_id }}</h3>
+                            <div class="stat-item">
+                                <span class="stat-label">Grade:</span>
+                                <span>{{ record.avg_grade|floatformat:1 }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">GPA Drop:</span>
+                                <span class="{% if record.gpa_drop %}gpa-drop-yes{% else %}gpa-drop-no{% endif %}">
+                                    {{ record.gpa_drop|yesno:"Yes,No" }}
+                                </span>
                             </div>
                         </div>
-                        {% if prediction.confidence %}
-                        <div class="confidence-meter">
-                            <span class="stat-label">Model Confidence:</span>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: {{ prediction.confidence }}%"></div>
-                                <div class="confidence-text">{{ prediction.confidence }}%</div>
-                            </div>
+                    {% endfor %}
+                </div>
+                <!-- AI Prediction Card -->
+                {% if prediction %}
+                    <div class="prediction-card feature-card">
+                        <div class="prediction-header">
+                            <i class="fas fa-brain prediction-icon"></i>
+                            <h2 class="prediction-title">AI Performance Prediction</h2>
                         </div>
-                        {% endif %}
-                        {% if prediction.changes %}
-                        <div class="changes-grid">
-                            <div class="change-item">
-                                <div class="change-value {% if prediction.changes.grade_change > 0 %}change-positive{% elif prediction.changes.grade_change < 0 %}change-negative{% else %}change-neutral{% endif %}">
-                                    {% if prediction.changes.grade_change > 0 %}+{% endif %}{{ prediction.changes.grade_change }}
-                                </div>
-                                <div>Grade Change</div>
-                                <small>({{ prediction.changes.grade_change_pct }}%)</small>
+                        {% if prediction.prediction == "No previous GPA records found for this student." or prediction.prediction == "This is the student's first semester — no prior GPA to compare or track." %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> {{ prediction.prediction }}
                             </div>
-                            <div class="change-item">
-                                <div class="change-value {% if prediction.changes.attendance_change > 0 %}change-positive{% elif prediction.changes.attendance_change < 0 %}change-negative{% else %}change-neutral{% endif %}">
-                                    {% if prediction.changes.attendance_change > 0 %}+{% endif %}{{ prediction.changes.attendance_change }}%
-                                </div>
-                                <div>Attendance Change</div>
-                                <small>({{ prediction.changes.attendance_change_pct }}%)</small>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% if prediction.prediction == 'Yes' %}
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            <strong>Warning:</strong> The model predicts a potential GPA drop. Consider implementing intervention strategies.
-                        </div>
                         {% else %}
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle"></i> 
-                            <strong>Good News:</strong> The model predicts stable academic performance for this semester.
-                        </div>
-                        {% endif %}
-                    {% endif %}
-                </div>
-            {% endif %}
+                            <div class="prediction-result">
+                                <span>GPA Change from Previous Semester:</span>
+                                <div class="prediction-value {% if prediction.prediction == 'Yes' %}prediction-yes{% else %}prediction-no{% endif %}">
+                                    {% if prediction.changes.grade_change < 0 %}
+                                        {{ prediction.changes.grade_change|floatformat:1 }}
+                                    {% else %}
+                                        +{{ prediction.changes.grade_change|floatformat:1 }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="confidence-meter">
+                                <span>Model Confidence:</span>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: {% if prediction.confidence %}{{ prediction.confidence }}{% else %}75{% endif %}%"></div>
+                                    <div class="confidence-text">{% if prediction.confidence %}{{ prediction.confidence }}{% else %}75{% endif %}%</div>
+                                </div>
+                            </div>
+                            {% if prediction.changes.grade_change < 0 %}
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-triangle"></i> 
+                                    <strong>Warning:</strong> The model predicts a potential GPA drop of {{ prediction.changes.grade_change|floatformat:1 }} compared to the previous semester.
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle"></i> 
+                                    <strong>Good News:</strong> The model predicts stable academic performance with a GPA increase of +{{ prediction.changes.grade_change|floatformat:1 }} compared to the previous semester.
+                                </div>
+                            {% endif %}
 
-            <!-- Charts Section -->
-            <div class="chart-row">
-                <div class="chart-container">
-                    <canvas id="gpaChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <canvas id="attendanceChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <canvas id="performanceChart"></canvas>
-                </div>
-            </div>
-
-            <h2>Historical Records</h2>
-            <div class="record-grid">
-                {% for record in predicted_records.prev_records %}
-                    <div class="record-item">
-                        <h3>Semester {{ record.semester_id }}</h3>
-                        <div class="stat-item">
-                            <span class="stat-label">Grade:</span>
-                            <span>{{ record.avg_grade }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Attendance:</span>
-                            <span>{{ record.attendance_percentage }}%</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">GPA Drop:</span>
-                            <span class="{% if record.gpa_drop %}gpa-drop-yes{% else %}gpa-drop-no{% endif %}">
-                                {{ record.gpa_drop|yesno:"Yes,No" }}
-                            </span>
-                        </div>
+                            {% endif %}
                     </div>
-                {% endfor %}
+                {% endif %}
+                <!-- Chart -->
+                <div class="chart-container feature-card">
+                    <canvas id="trendChart"></canvas>
+                </div>
             </div>
         {% endif %}
     </main>
-
-    <footer class="footer" style="text-align: center; padding: 2rem 0;">
-        <p style="margin: 0; color: var(--secondary); font-weight: 600;">&copy; 2025 Academic Analytics | Data Science Project</p>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Academic Analytics | Data Science Project</p>
     </footer>
-
     <script>
-        // Initialize charts
+        // Mobile menu functionality
+        document.getElementById('mobileMenuButton').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.add('active');
+        });
+        document.getElementById('mobileMenuClose').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.remove('active');
+        });
+        // Student filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const studentSelect = document.getElementById('id_student');
+            const countSelector = document.getElementById('studentCountSelector');
+            // Store all options initially
+            const allOptions = Array.from(studentSelect.options);
+            countSelector.addEventListener('change', function() {
+                const value = this.value;
+                // Remove all options except the first one (empty/default)
+                while (studentSelect.options.length > 1) {
+                    studentSelect.remove(1);
+                }
+                if (value === 'all') {
+                    // Add back all options
+                    allOptions.forEach(option => {
+                        if (option.value) { // Skip the first empty option
+                            studentSelect.add(option);
+                        }
+                    });
+                } else {
+                    const [start, end] = value.split('-').map(Number);
+                    // Add back only options in the selected range
+                    allOptions.forEach(option => {
+                        if (option.value) { // Skip the first empty option
+                            const studentId = parseInt(option.value);
+                            if (studentId >= start && studentId <= end) {
+                                studentSelect.add(option);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        // Chart functionality
         document.addEventListener('DOMContentLoaded', function () {
-            try {
-                const labels = JSON.parse('{{ predicted_records.labels|escapejs }}');
-                const gpaData = JSON.parse('{{ predicted_records.avg_grades|escapejs }}');
-                const attendanceData = JSON.parse('{{ predicted_records.attendance_percentages|escapejs }}');
-
-                if (!labels.length || !gpaData.length) return;
-
-                const chartOptions = {
+            {% if predicted_records %}
+            const labels = JSON.parse('{{ predicted_records.labels|escapejs }}');
+            const gpaData = JSON.parse('{{ predicted_records.avg_grades|escapejs }}');
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            let arrowScale = 1;
+            let scaleDirection = 1; // 1: increasing, -1: decreasing
+            const drawArrowPlugin = {
+                id: 'arrowPlugin',
+                afterDraw(chart, args, pluginOptions) {
+                    const { ctx, scales: { x, y } } = chart;
+                    if (gpaData.length < 2) return; // Need at least two points
+                    const lastIndex = gpaData.length - 1;
+                    const xEnd = x.getPixelForValue(lastIndex);
+                    const yEnd = y.getPixelForValue(gpaData[lastIndex]);
+                    const xStart = x.getPixelForValue(lastIndex - 1);
+                    const yStart = y.getPixelForValue(gpaData[lastIndex - 1]);
+                    const angle = Math.atan2(yEnd - yStart, xEnd - xStart);
+                    // Arrow size
+                    const baseLength = 10;
+                    const baseWidth = 8;
+                    const arrowLength = baseLength * arrowScale;
+                    const arrowWidth = baseWidth * arrowScale;
+                    // Calculate points
+                    const arrowX1 = xEnd - arrowLength * Math.cos(angle) + (arrowWidth / 2) * Math.sin(angle);
+                    const arrowY1 = yEnd - arrowLength * Math.sin(angle) - (arrowWidth / 2) * Math.cos(angle);
+                    const arrowX2 = xEnd - arrowLength * Math.cos(angle) - (arrowWidth / 2) * Math.sin(angle);
+                    const arrowY2 = yEnd - arrowLength * Math.sin(angle) + (arrowWidth / 2) * Math.cos(angle);
+                    ctx.save();
+                    // Shadow for depth
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = 6;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+                    // Gradient fill for 3D lighting effect
+                    const gradient = ctx.createLinearGradient(xEnd, yEnd, arrowX1, arrowY1);
+                    gradient.addColorStop(0, '#FF4444');   // Brighter red
+                    gradient.addColorStop(1, '#CC0000');   // Darker red
+                    ctx.fillStyle = gradient;
+                    ctx.strokeStyle = '#990000';          // Border color
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(xEnd, yEnd);
+                    ctx.lineTo(arrowX1, arrowY1);
+                    ctx.lineTo(arrowX2, arrowY2);
+                    ctx.closePath();
+                    // Fill and stroke for depth
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            };
+            // Create the Chart instance
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Performance Trend',
+                            data: gpaData,
+                            backgroundColor: '#cccccc',
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            categoryPercentage: 0.5,
+                            barPercentage: 0.5
+                        },
+                        {
+                            type: 'line',
+                            label: 'Trend Line',
+                            data: gpaData,
+                            borderColor: '#FF0000',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
+                        title: {
+                            display: true,
+                            text: 'Performance Trend Over Semesters',
+                            font: { size: 18, weight: 'bold' },
+                            color: '#ffdd99'
+                        },
                         legend: {
-                            labels: {
-                                color: '#f5f1e9',
-                                font: {
-                                    family: "'Playfair Display', serif"
-                                }
-                            }
+                            display: false
                         }
                     },
                     scales: {
                         y: {
+                            beginAtZero: true,
+                            suggestedMax: 4.0,
                             ticks: { color: '#f5f1e9' },
                             grid: { color: 'rgba(255, 255, 255, 0.1)' }
                         },
@@ -760,112 +875,19 @@
                             grid: { color: 'rgba(255, 255, 255, 0.1)' }
                         }
                     }
-                };
-
-                new Chart(document.getElementById('gpaChart'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'GPA Trend',
-                            data: gpaData,
-                            borderColor: '#ffdd99',
-                            backgroundColor: 'rgba(255, 221, 153, 0.2)',
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: chartOptions
-                });
-
-                new Chart(document.getElementById('attendanceChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Attendance %',
-                            data: attendanceData,
-                            backgroundColor: 'rgba(255, 221, 153, 0.7)',
-                            borderRadius: 5
-                        }]
-                    },
-                    options: chartOptions
-                });
-
-                new Chart(document.getElementById('performanceChart'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: 'Average Grade',
-                                data: gpaData,
-                                borderColor: '#ffdd99',
-                                backgroundColor: 'rgba(255, 221, 153, 0.2)',
-                                tension: 0.3,
-                                fill: false,
-                                yAxisID: 'y'
-                            },
-                            {
-                                label: 'Attendance %',
-                                data: attendanceData,
-                                borderColor: '#6bff6b',
-                                backgroundColor: 'rgba(107, 255, 107, 0.2)',
-                                tension: 0.3,
-                                fill: false,
-                                yAxisID: 'y1'
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Performance Comparison by Semester',
-                                color: '#ffdd99'
-                            },
-                            tooltip: {
-                                mode: 'index',
-                                intersect: false
-                            },
-                            legend: {
-                                labels: {
-                                    color: '#f5f1e9',
-                                    font: {
-                                        family: "'Playfair Display', serif"
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                type: 'linear',
-                                display: true,
-                                position: 'left',
-                                ticks: { color: '#f5f1e9' },
-                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                            },
-                            y1: {
-                                type: 'linear',
-                                display: true,
-                                position: 'right',
-                                ticks: { color: '#f5f1e9' },
-                                grid: { drawOnChartArea: false, color: 'rgba(255, 255, 255, 0.1)' },
-                                min: 0,
-                                max: 100
-                            },
-                            x: {
-                                ticks: { color: '#f5f1e9' },
-                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                            }
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error("Error rendering charts:", error);
+                },
+                plugins: [drawArrowPlugin]
+            });
+            // Animation loop to update arrowScale and re-draw chart
+            function animate() {
+                arrowScale += scaleDirection * 0.02;
+                if (arrowScale >= 1.3) scaleDirection = -1;
+                else if (arrowScale <= 0.8) scaleDirection = 1;
+                myChart.update('none'); // update without animation to avoid flicker
+                requestAnimationFrame(animate);
             }
+            animate();
+            {% endif %}
         });
     </script>
 </body>

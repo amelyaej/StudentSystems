@@ -88,7 +88,6 @@ def train_and_save_model(modeladmin, request, queryset):
         import traceback
         traceback.print_exc()
 
-
 # === STUDENT ADMIN ===
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
@@ -97,7 +96,6 @@ class StudentAdmin(admin.ModelAdmin):
     list_filter = ('dept',)
     ordering = ('stu_id',)
     readonly_fields = ('stu_id',)
-    list_per_page = 20
     change_list_template = 'admin/student_change_list.html'
 
     def view_details_link(self, obj):
@@ -131,6 +129,21 @@ class StudentAdmin(admin.ModelAdmin):
         except Student.DoesNotExist:
             messages.error(request, "Student not found")
             return redirect('admin:final_app_student_changelist')
+
+    def changelist_view(self, request, extra_context=None):
+        # Handle per_page parameter
+        per_page = request.GET.get('per_page')
+        if per_page and per_page.isdigit():
+            self.list_per_page = int(per_page)
+        
+        # Handle sort parameter
+        sort_by = request.GET.get('sort')
+        if sort_by:
+            self.ordering = (sort_by,)
+        else:
+            self.ordering = ('stu_id',)
+            
+        return super().changelist_view(request, extra_context)
 
 
 # === GPA RECORD ADMIN ===

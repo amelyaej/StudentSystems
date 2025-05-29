@@ -4,6 +4,38 @@
 {% block content %}
 <div id="content-main">
 
+  <!-- Records Per Page and Sort By Controls -->
+  <div class="controls-container" style="display: flex; justify-content: space-between; margin-bottom: 1em;">
+    <!-- Records Per Page Dropdown -->
+    <form method="get" id="records-per-page-form">
+      <label for="recordsPerPage">Show</label>
+      <select id="recordsPerPage" name="per_page" onchange="document.getElementById('records-per-page-form').submit()">
+        <option value="10" {% if request.GET.per_page == '10' %}selected{% endif %}>10</option>
+        <option value="25" {% if request.GET.per_page == '25' %}selected{% endif %}>25</option>
+        <option value="50" {% if request.GET.per_page == '50' %}selected{% endif %}>50</option>
+        <option value="100" {% if request.GET.per_page == '100' %}selected{% endif %}>100</option>
+      </select>
+      <span>students</span>
+    </form>
+
+    <!-- Sort By Dropdown -->
+    <form method="get" id="sort-by-form">
+      <label for="sortBy">Sort by</label>
+      <select id="sortBy" name="sort" onchange="document.getElementById('sort-by-form').submit()">
+        <option value="stu_id" {% if request.GET.sort == 'stu_id' %}selected{% endif %}>Student ID</option>
+        <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name (A-Z)</option>
+        <option value="-name" {% if request.GET.sort == '-name' %}selected{% endif %}>Name (Z-A)</option>
+        <option value="dept" {% if request.GET.sort == 'dept' %}selected{% endif %}>Department (A-Z)</option>
+        <option value="-dept" {% if request.GET.sort == '-dept' %}selected{% endif %}>Department (Z-A)</option>
+        <option value="dob" {% if request.GET.sort == 'dob' %}selected{% endif %}>Date of Birth (Oldest)</option>
+        <option value="-dob" {% if request.GET.sort == '-dob' %}selected{% endif %}>Date of Birth (Newest)</option>
+      </select>
+      <input type="hidden" name="per_page" value="{{ request.GET.per_page }}">
+    </form>
+  </div>
+
+  {{ block.super }}
+
   <!-- Student Table -->
   <div class="module" role="region" aria-labelledby="student-records-heading">
     <h2 id="student-records-heading">Student Records</h2>
@@ -11,39 +43,35 @@
       <table role="grid" aria-describedby="student-records-description">
         <thead>
           <tr>
-            <th scope="col" title="Student ID">Student ID <i class="fas fa-sort"></i></th>
-            <th scope="col" title="Name">Name <i class="fas fa-sort"></i></th>
-            <th scope="col" title="Email">Email <i class="fas fa-sort"></i></th>
-            <th scope="col" title="Department">Department <i class="fas fa-sort"></i></th>
-            <th scope="col" title="Gender">Gender <i class="fas fa-sort"></i></th>
-            <th scope="col" title="Date of Birth">Date of Birth <i class="fas fa-sort"></i></th>
-            <th scope="col" title="Action">Action <i class="fas fa-sort"></i></th>
+            <th scope="col">Student ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Department</th>
+            <th scope="col">Gender</th>
+            <th scope="col">Date of Birth</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
           {% for student in cl.result_list %}
-          <tr role="row" onclick="window.location.href='{{ student.pk }}/change/'" style="cursor: pointer;">
-            <td role="gridcell">{{ student.stu_id }}</td>
-            <td role="gridcell">{{ student.name }}</td>
-            <td role="gridcell">
+          <tr onclick="window.location.href='{{ student.pk }}/change/'" style="cursor: pointer;">
+            <td>{{ student.stu_id }}</td>
+            <td>{{ student.name }}</td>
+            <td>
               <a href="mailto:{{ student.email }}" style="color: var(--secondary); text-decoration: underline;" onclick="event.stopPropagation();">
                 {{ student.email }}
               </a>
             </td>
-            <td role="gridcell">{{ student.dept.dept_name }}</td>
-            <td role="gridcell">{{ student.gender }}</td>
-            <td role="gridcell">{{ student.dob|date:"F j, Y" }}</td>
-            <td role="gridcell" class="actions-column">
-              <a href="{{ student.pk }}/delete/" class="button danger" onclick="event.stopPropagation();" aria-label="Delete student {{ student.name }}">
-                Delete
-              </a>
+            <td>{{ student.dept.dept_name }}</td>
+            <td>{{ student.gender }}</td>
+            <td>{{ student.dob|date:"F j, Y" }}</td>
+            <td>
+              <a href="{{ student.pk }}/delete/" class="button danger" onclick="event.stopPropagation();">Delete</a>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="7" class="empty-state" role="alert" aria-live="assertive">
-              ⚠️ No student records found.
-            </td>
+            <td colspan="7">⚠️ No student records found.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -51,39 +79,31 @@
     </div>
   </div>
 
+  <!-- Pagination -->
+  <div class="pagination">
+    {% if cl.paginator.num_pages > 1 %}
+      {% if cl.page_num > 0 %}
+        <a href="?p={{ cl.page_num|add:"-1" }}&per_page={{ request.GET.per_page }}&sort={{ request.GET.sort }}">Previous</a>
+      {% endif %}
+
+      <span>Page {{ cl.page_num|add:"1" }} of {{ cl.paginator.num_pages }}</span>
+
+      {% if cl.page_num < cl.paginator.num_pages|add:"-1" %}
+        <a href="?p={{ cl.page_num|add:"1" }}&per_page={{ request.GET.per_page }}&sort={{ request.GET.sort }}">Next</a>
+      {% endif %}
+    {% endif %}
+  </div>
+
   <!-- Scroll Down Button -->
-  <button class="scroll-down-btn" aria-label="Scroll to bottom of page" onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })">
+  <button class="scroll-down-btn" onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })">
     <i class="fas fa-arrow-down"></i>
   </button>
+
 </div>
 {% endblock %}
 
 {% block footer %}
-<div class="footer" role="contentinfo">
+<div class="footer">
   &copy; {% now "Y" %} Academic Analytics | Data Science Project
 </div>
-{% endblock %}
-
-{% block js %}
-{{ block.super }}
-<script>
-  const switcher = document.getElementById('theme-switcher');
-  const root = document.documentElement;
-
-  if (switcher && root) {
-    switcher.addEventListener('change', () => {
-      if (switcher.checked) {
-        root.style.setProperty('--primary', '#ffffff');
-        root.style.setProperty('--secondary', '#3A0519');
-        root.style.setProperty('--text-light', '#3A0519');
-        root.style.setProperty('--accent-glow', '#eee');
-      } else {
-        root.style.setProperty('--primary', '#3A0519');
-        root.style.setProperty('--secondary', '#ffdd99');
-        root.style.setProperty('--text-light', '#f5f1e9');
-        root.style.setProperty('--accent-glow', 'rgba(255, 221, 153, 0.1)');
-      }
-    });
-  }
-</script>
 {% endblock %}
