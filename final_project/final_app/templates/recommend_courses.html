@@ -17,7 +17,7 @@
     html, body {
       font-family: 'Playfair Display', serif;
       scroll-behavior: smooth;
-      background-color: #3A0519;    
+      background-color: #3A0519;       
       color: #f5f1e9;
     }
 
@@ -344,5 +344,16 @@
     });
   </script>
 
+  <!-- Auto Scroll to Results -->
+  {% if results %}
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const resultSection = document.getElementById('result');
+        if (resultSection) {
+          resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    </script>
+  {% endif %}
 </body>
 </html>
