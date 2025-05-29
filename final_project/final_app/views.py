@@ -1,63 +1,56 @@
 from django.shortcuts import render
-from .forms import GPAPredictionForm
+from .forms import GPAPredictionForm, UploadFileForm
 from .models import GPARecord
 import numpy as np
 import pandas as pd
 import joblib
 import os
 from django.conf import settings
+import csv
 
-# Global variable to cache the model
+# Global model and metrics cache
 _model = None
 _model_metrics = None
+
 def attendance_predict_view(request):
     prediction = None
 
     if request.method == 'POST':
         try:
             attendance = float(request.POST.get('attendance'))
-
             if 0 <= attendance <= 100:
                 model = joblib.load('final_app/models/attendance_gpa_model.pkl')
-                prediction = model.predict(np.array([[attendance]]))[0]
                 grade = model.predict(np.array([[attendance]]))[0]
-                gpa = round((grade / 100) * 4.0, 2) # Assuming a scale of 0-100 to 4.0  
+                gpa = round((grade / 100) * 4.0, 2)
                 prediction = gpa
             else:
                 prediction = "Invalid input"
-        except Exception as e:
-            prediction = f"Input the number!"
+        except Exception:
+            prediction = "Input the number!"
 
     return render(request, 'attendance_predict.html', {'prediction': prediction})
 
 def get_model():
-    """
-    Load the trained model only once.
-    """
     global _model
     if _model is None:
-        MODEL_PATH = os.path.join(settings.BASE_DIR, 'final_app', 'models', 'gpa_drop_model.pkl')
+        path = os.path.join(settings.BASE_DIR, 'final_app', 'models', 'gpa_drop_model.pkl')
         try:
-            _model = joblib.load(MODEL_PATH)
+            _model = joblib.load(path)
         except Exception as e:
             raise RuntimeError(f"Error loading model: {e}")
     return _model
 
 def get_model_metrics():
-    """
-    Load the trained model only once.
-    """
     global _model_metrics
     if _model_metrics is None:
-        METRICS_PATH = os.path.join(settings.BASE_DIR, 'final_app', 'models', 'gpa_drop_model_metrics.pkl')
+        path = os.path.join(settings.BASE_DIR, 'final_app', 'models', 'gpa_drop_model_metrics.pkl')
         try:
-            _model_metrics = joblib.load(METRICS_PATH)
+            _model_metrics = joblib.load(path)
             if not all(key in _model_metrics for key in ['model_name', 'accuracy', 'precision', 'recall', 'f1_score']):
-                raise ValueError("Metrics file missing required fields")
-        except Exception as e:
-            print(f"Warning: Could not load metrics - {e}")
+                raise ValueError("Incomplete metrics file")
+        except Exception:
             _model_metrics = {
-                'model_name': 'GPA Drop Metrics',
+                'model_name': 'GPA Drop Model',
                 'accuracy': 0.0,
                 'precision': 0.0,
                 'recall': 0.0,
@@ -66,24 +59,12 @@ def get_model_metrics():
     return _model_metrics
 
 def home(request):
-    """
-    Render the homepage.
-    """
     return render(request, 'home.html')
 
 def predict_gpa(request):
-    """
-    Handle GPA drop prediction requests.
-    - Validates form input
-    - Fetches relevant GPA records
-    - Predicts GPA drop using latest semester data
-    - Returns results to template for display
-    """
     model = get_model()
     metrics = get_model_metrics()
-    predicted_records = None
-    predicted_results = None
-    changes = None  # Initialize changes dictionary
+    predicted_records = predicted_results = changes = None
 
     if request.method == 'POST':
         form = GPAPredictionForm(request.POST)
@@ -91,13 +72,11 @@ def predict_gpa(request):
             student = form.cleaned_data['student']
             semester_id = form.cleaned_data['semester_id']
 
-            # Ensure semester_id is an integer
             try:
                 semester_id = int(semester_id)
             except (ValueError, TypeError):
                 semester_id = 1
 
-            # Get all GPA records up to the selected semester
             previous_records = GPARecord.objects.filter(
                 student=student,
                 semester_id__lte=semester_id
@@ -105,8 +84,7 @@ def predict_gpa(request):
 
             latest_record = previous_records.last()
 
-            if latest_record is None:
-                # No previous records found
+            if not latest_record:
                 predicted_results = {
                     'student': student,
                     'semester_id': semester_id,
@@ -123,7 +101,6 @@ def predict_gpa(request):
                 }
 
             elif semester_id == 1 or previous_records.count() == 1:
-                # First semester, no prior GPA to compare
                 predicted_results = {
                     'student': student,
                     'semester_id': semester_id,
@@ -139,7 +116,6 @@ def predict_gpa(request):
                 }
 
             else:
-                # For semesters > 1, predict GPA drop using latest record features
                 features = pd.DataFrame([{
                     'semester_id': latest_record.semester_id,
                     'avg_grade': latest_record.avg_grade,
@@ -152,26 +128,20 @@ def predict_gpa(request):
                     prediction = model.predict(features)[0]
                     confidence = round(model.predict_proba(features)[0][1] * 100, 2)
                 except Exception as e:
-                    prediction = f"Error during prediction: {e}"
+                    prediction = f"Error: {e}"
                     confidence = None
 
-                # Calculate changes from previous semester
                 if previous_records.count() > 1:
-                    previous_record = previous_records[previous_records.count()-2]  # Second last record
+                    prev = previous_records[previous_records.count()-2]
                     try:
-                        grade_change = round(latest_record.avg_grade - previous_record.avg_grade, 2)
-                        grade_change_pct = round((grade_change / previous_record.avg_grade) * 100, 1)
-                        attendance_change = round(latest_record.attendance_percentage - previous_record.attendance_percentage, 2)
-                        attendance_change_pct = round((attendance_change / previous_record.attendance_percentage) * 100, 1)
-
                         changes = {
-                            'grade_change': grade_change,
-                            'grade_change_pct': grade_change_pct,
-                            'attendance_change': attendance_change,
-                            'attendance_change_pct': attendance_change_pct,
+                            'grade_change': round(latest_record.avg_grade - prev.avg_grade, 2),
+                            'grade_change_pct': round((latest_record.avg_grade - prev.avg_grade) / prev.avg_grade * 100, 1),
+                            'attendance_change': round(latest_record.attendance_percentage - prev.attendance_percentage, 2),
+                            'attendance_change_pct': round((latest_record.attendance_percentage - prev.attendance_percentage) / prev.attendance_percentage * 100, 1)
                         }
-                    except (AttributeError, TypeError, ZeroDivisionError) as e:
-                        print(f"Error calculating changes: {e}")
+                    except (AttributeError, TypeError, ZeroDivisionError):
+                        pass
 
                 predicted_results = {
                     'student': student,
@@ -191,11 +161,6 @@ def predict_gpa(request):
                     'attendance_percentages': [float(r.attendance_percentage) for r in previous_records],
                     'avg_scores': [float(r.avg_score) for r in previous_records] if hasattr(previous_records[0], 'avg_score') else []
                 }
-
-        else:
-            predicted_results = None
-            predicted_records = None
-
     else:
         form = GPAPredictionForm()
 
@@ -205,3 +170,52 @@ def predict_gpa(request):
         'prediction': predicted_results,
         'metrics': metrics,
     })
+
+def engagement_ratio(request):
+    csv_path = os.path.join(settings.BASE_DIR, 'data', 'processed_student_data.csv')
+
+    # Read all students from CSV
+    all_students = []
+    with open(csv_path, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            name = row.get('name', 'Unknown')
+            all_students.append(name)
+
+    all_students = sorted(list(set(all_students)))  # unique sorted names
+
+    selected_students = []
+    filtered_data = []
+
+    if request.method == 'POST':
+     selected_students = request.POST.getlist('students')  # list of selected names
+
+    # Filter data for selected students
+    with open(csv_path, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row.get('name') in selected_students:
+                try:
+                    row['engagement_ratio'] = float(row.get('engagement_ratio', 0))
+                except ValueError:
+                    row['engagement_ratio'] = 0
+                try:
+                    row['risk_score'] = float(row.get('risk_score', 0))
+                except ValueError:
+                    row['risk_score'] = 0
+                
+                # Convert semester_id to int if present
+                try:
+                    row['semester_id'] = int(row.get('semester_id', 0))
+                except (ValueError, TypeError):
+                    row['semester_id'] = 'N/A'
+
+                filtered_data.append(row)
+
+
+    context = {
+        'all_students': all_students,
+        'selected_students': selected_students,
+        'filtered_data': filtered_data,
+    }
+    return render(request, 'engagement_ratio.html', context)

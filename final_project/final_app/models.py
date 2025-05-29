@@ -147,3 +147,15 @@ class GPARecord(models.Model):
 
     def __str__(self):
         return f"{self.student.name} - Semester {self.semester_id}"
+
+def predict_difficulty(total_credits, gpa):
+    """
+    Returns an estimated difficulty level based on total credits and GPA.
+    Replace this with your trained model logic if available.
+    """
+    if total_credits > 18:
+        return "High"
+    elif total_credits > 12:
+        return "Medium"
+    else:
+        return "Low"
